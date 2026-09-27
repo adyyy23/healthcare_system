@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HealthCare System — Clinical Portal & Appointment Management</title>
+  <meta name="description" content="Professional healthcare booking, patient medical management, doctor schedules, and clinical staff dashboard.">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Google Fonts: Plus Jakarta Sans & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==========================================================================
+       HEALTHCARE SYSTEM - CLINICAL DESIGN SYSTEM
+       Strict solid surfaces, high visual contrast, zero gradients, zero emojis
+       ========================================================================== */
+    :root {
+      --bg-app: #f8fafc;
+      --bg-surface: #ffffff;
+      --bg-subtle: #f1f5f9;
+      --bg-muted: #e2e8f0;
+      --bg-nav: #0f172a;
+      --bg-nav-hover: #1e293b;
+
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --text-inverse: #ffffff;
+
+      --teal-primary: #0d9488;
+      --teal-hover: #0f766e;
+      --teal-light: #f0fdfa;
+      --teal-border: #99f6e4;
+
+      --blue-primary: #2563eb;
+      --blue-light: #eff6ff;
+      --blue-border: #bfdbfe;
+
+      --amber-warning: #d97706;
+      --amber-light: #fffbeb;
+      --amber-border: #fde68a;
+
+      --rose-danger: #dc2626;
+      --rose-light: #fef2f2;
+      --rose-border: #fecaca;
+
+      --border-color: #e2e8f0;
+      --border-subtle: #f8fafc;
+
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --radius-full: 9999px;
+
+      --shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.07);
+      --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.1);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, ::before, ::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+      }
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+      background-color: var(--bg-app);
+      color: var(--text-primary);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    button {
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      background: none;
+    }
+
+    input, select, textarea {
+      font-family: inherit;
+      font-size: 0.9375rem;
+    }
+
+    /* Navigation Bar */
+    .clinical-navbar {
+      background-color: var(--bg-nav);
+      color: var(--text-inverse);
+      height: 70px;
+      padding: 0 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .brand-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-cross-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-md);
+      background-color: var(--teal-primary);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .brand-title {
+      font-size: 1.125rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .brand-badge {
+      font-size: 0.6875rem;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    /* Role Switcher in Header */
+    .role-switcher-group {
+      display: flex;
+      align-items: center;
+      background-color: rgba(255, 255, 255, 0.08);
+      padding: 3px;
+      border-radius: var(--radius-md);
+      gap: 4px;
+    }
+
+    .role-btn {
+      padding: 6px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: #94a3b8;
+      transition: all 0.15s ease;
+    }
+
+    .role-btn:hover {
+      color: #ffffff;
+    }
+
+    .role-btn.active {
+      background-color: var(--teal-primary);
+      color: #ffffff;
+    }
+
+    /* Button System */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 18px;
+      border-radius: var(--radius-md);
+      font-size: 0.875rem;
+      font-weight: 600;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .btn-teal {
+      background-color: var(--teal-primary);
+      color: #ffffff;
+    }
+
+    .btn-teal:hover {
+      background-color: var(--teal-hover);
+    }
+
+    .btn-secondary {
+      background-color: var(--bg-surface);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--bg-subtle);
+    }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 0.8125rem;
+    }
+
+    /* Main Container */
+    .portal-main {
+      flex: 1;
+      max-width: 1320px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 32px 24px 64px;
+    }
+
+    .role-view {
+      display: none;
+    }
+
+    .role-view.active {
+      display: block;
+      animation: fadeIn 0.2s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Stats Grid */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .stat-box {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .stat-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .stat-val {
+      font-size: 1.875rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      line-height: 1.1;
+    }
+
+    /* Card Panels */
+    .card-panel {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 24px;
+    }
+
+    .card-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 14px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .card-heading {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    /* Doctor Card Grid */
+    .doctors-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .doctor-profile-card {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.15s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .doctor-profile-card:hover {
+      border-color: var(--teal-primary);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .doctor-img-wrap {
+      width: 100%;
+      height: 200px;
+      overflow: hidden;
+      background-color: var(--bg-subtle);
+    }
+
+    .doctor-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .doctor-card-body {
+      padding: 16px;
+    }
+
+    .doctor-name {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .doctor-spec {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--teal-primary);
+      margin-bottom: 8px;
+    }
+
+    .doctor-meta-line {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-bottom: 4px;
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: var(--radius-sm);
+      font-size: 0.6875rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .badge-approved, .badge-completed {
+      background-color: var(--teal-light);
+      color: var(--teal-primary);
+      border: 1px solid var(--teal-border);
+    }
+
+    .badge-pending {
+      background-color: var(--amber-light);
+      color: var(--amber-warning);
+      border: 1px solid var(--amber-border);
+    }
+
+    .badge-cancelled {
+      background-color: var(--rose-light);
+      color: var(--rose-danger);
+      border: 1px solid var(--rose-border);
+    }
+
+    /* Tables */
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    .clinical-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    .clinical-table th {
+      padding: 12px 18px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      background-color: var(--bg-subtle);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .clinical-table td {
+      padding: 14px 18px;
+      font-size: 0.875rem;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-primary);
+      vertical-align: middle;
+    }
+
+    .clinical-table tr:hover td {
+      background-color: var(--bg-subtle);
+    }
+
+    /* Forms */
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 9px 12px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+      background-color: var(--bg-surface);
+      color: var(--text-primary);
+      outline: none;
+    }
+
+    .form-control:focus {
+      border-color: var(--teal-primary);
+      box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.15);
+    }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(15, 23, 42, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+
+    .modal-window {
+      background-color: var(--bg-surface);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-lg);
+      width: 100%;
+      max-width: 520px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 28px;
+    }
+
+    /* Responsive */
+    @media screen and (max-width: 768px) {
+      .clinical-navbar {
+        padding: 0 16px;
+        flex-direction: column;
+        height: auto;
+        padding-bottom: 12px;
+        gap: 12px;
+      }
+      .portal-main {
+        padding: 20px 16px 40px;
+      }
+      .role-switcher-group {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Clinical Top Navbar -->
+  <header class="clinical-navbar">
+    <div class="brand-wrap">
+      <div class="brand-cross-icon">
+        <i data-lucide="plus-circle" style="width: 24px; height: 24px;"></i>
+      </div>
+      <div>
+        <div class="brand-title">Healthcare System</div>
+        <div class="brand-badge">Clinical & Patient Portal</div>
+      </div>
+    </div>
+
+    <!-- Active Interface / Role Switcher -->
+    <div class="role-switcher-group">
+      <button class="role-btn active" data-target="public">Public Clinic</button>
+      <button class="role-btn" data-target="patient">Patient View</button>
+      <button class="role-btn" data-target="doctor">Doctor View</button>
+      <button class="role-btn" data-target="admin">Admin System</button>
+    </div>
+  </header>
+
+  <main class="portal-main">
+
+    <!-- ====================================================================
+         INTERFACE 1: PUBLIC PORTAL & APPOINTMENT BOOKING
+         ==================================================================== -->
+    <section id="view-public" class="role-view active">
+      <!-- Consultation Booking Form Card -->
+      <div class="card-panel">
+        <div class="card-header-row">
+          <div>
+            <h2 class="card-heading">Schedule a Medical Consultation</h2>
+            <p style="font-size: 0.8125rem; color: var(--text-muted); margin-top: 2px;">
+              Book an in-person or telehealth appointment with accredited specialists.
+            </p>
+          </div>
+          <span class="badge badge-approved">Online Booking Open</span>
+        </div>
+
+        <form id="public-booking-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Patient Full Name *</label>
+              <input type="text" id="book-name" required class="form-control" placeholder="e.g. Mariane Millera">
+            </div>
+            <div class="form-group">
+              <label>Email Address *</label>
+              <input type="email" id="book-email" required class="form-control" placeholder="patient@healthcare.com">
+            </div>
+            <div class="form-group">
+              <label>Phone Number *</label>
+              <input type="tel" id="book-phone" required class="form-control" placeholder="+1 (555) 019-2834">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Clinical Service *</label>
+              <select id="book-service" class="form-control" required>
+                <option value="General Medicine">General Medicine & Preventive Care</option>
+                <option value="Cardiology">Cardiology Consultation</option>
+                <option value="Dermatology">Dermatology & Skin Care</option>
+                <option value="Pediatrics">Pediatrics Health Check</option>
+                <option value="Orthopedics">Orthopedics & Joint Clinic</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Select Doctor *</label>
+              <select id="book-doctor" class="form-control" required>
+                <option value="Dr. Sarah Ramos, MD">Dr. Sarah Ramos, MD (Cardiologist)</option>
+                <option value="Dr. Julian Santos, MD">Dr. Julian Santos, MD (General Physician)</option>
+                <option value="Dr. Elena Vance, MD">Dr. Elena Vance, MD (Dermatologist)</option>
+                <option value="Dr. Arthur Davies, MD">Dr. Arthur Davies, MD (Pediatrician)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Preferred Date *</label>
+              <input type="date" id="book-date" required class="form-control" value="2026-09-30">
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 20px;">
+            <label>Symptoms / Reason for Visit *</label>
+            <textarea id="book-reason" required class="form-control" rows="3" placeholder="Describe symptoms, duration, current medications, or consultation goals..."></textarea>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end;">
+            <button type="submit" class="btn btn-teal">
+              <i data-lucide="calendar-check" style="width: 16px; height: 16px;"></i>
+              Confirm Appointment Booking
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Featured Accredited Doctors -->
+      <div class="card-panel">
+        <div class="card-header-row">
+          <div>
+            <h2 class="card-heading">Accredited Medical Specialists</h2>
+            <p style="font-size: 0.8125rem; color: var(--text-muted); margin-top: 2px;">
+              Certified physicians available for clinical consultations and surgery follow-ups.
+            </p>
+          </div>
+        </div>
+
+        <div class="doctors-grid">
+          <div class="doctor-profile-card">
+            <div class="doctor-img-wrap">
+              <img src="images/doctor 1.jpg" alt="Dr. Sarah Ramos" class="doctor-img" onerror="this.src='https://ui-avatars.com/api/?name=Dr+Sarah+Ramos&background=0d9488&color=fff'">
+            </div>
+            <div class="doctor-card-body">
+              <div class="doctor-name">Dr. Sarah Ramos, MD</div>
+              <div class="doctor-spec">Cardiology & Internal Medicine</div>
+              <div class="doctor-meta-line"><i data-lucide="shield-check" style="width: 13px; height: 13px;"></i> License: MED-84920</div>
+              <div class="doctor-meta-line"><i data-lucide="clock" style="width: 13px; height: 13px;"></i> Mon - Fri (09:00 AM - 04:00 PM)</div>
+              <button class="btn btn-secondary btn-sm" style="width: 100%; margin-top: 12px;" onclick="selectDoctor('Dr. Sarah Ramos, MD', 'Cardiology')">
+                Select Specialist
+              </button>
+            </div>
+          </div>
+
+          <div class="doctor-profile-card">
+            <div class="doctor-img-wrap">
+              <img src="images/doctor 2.jpg" alt="Dr. Julian Santos" class="doctor-img" onerror="this.src='https://ui-avatars.com/api/?name=Dr+Julian+Santos&background=0d9488&color=fff'">
+            </div>
+            <div class="doctor-card-body">
+              <div class="doctor-name">Dr. Julian Santos, MD</div>
+              <div class="doctor-spec">General Medicine & Diagnostics</div>
+              <div class="doctor-meta-line"><i data-lucide="shield-check" style="width: 13px; height: 13px;"></i> License: MED-71044</div>
+              <div class="doctor-meta-line"><i data-lucide="clock" style="width: 13px; height: 13px;"></i> Mon - Sat (08:00 AM - 02:00 PM)</div>
+              <button class="btn btn-secondary btn-sm" style="width: 100%; margin-top: 12px;" onclick="selectDoctor('Dr. Julian Santos, MD', 'General Medicine')">
+                Select Specialist
+              </button>
+            </div>
+          </div>
+
+          <div class="doctor-profile-card">
+            <div class="doctor-img-wrap">
+              <img src="images/doctor 3.jpg" alt="Dr. Elena Vance" class="doctor-img" onerror="this.src='https://ui-avatars.com/api/?name=Dr+Elena+Vance&background=0d9488&color=fff'">
+            </div>
+            <div class="doctor-card-body">
+              <div class="doctor-name">Dr. Elena Vance, MD</div>
+              <div class="doctor-spec">Dermatology & Skin Pathology</div>
+              <div class="doctor-meta-line"><i data-lucide="shield-check" style="width: 13px; height: 13px;"></i> License: MED-90218</div>
+              <div class="doctor-meta-line"><i data-lucide="clock" style="width: 13px; height: 13px;"></i> Tue - Thu (10:00 AM - 05:00 PM)</div>
+              <button class="btn btn-secondary btn-sm" style="width: 100%; margin-top: 12px;" onclick="selectDoctor('Dr. Elena Vance, MD', 'Dermatology')">
+                Select Specialist
+              </button>
+            </div>
+          </div>
+
+          <div class="doctor-profile-card">
+            <div class="doctor-img-wrap">
+              <img src="images/doctor 4.jpg" alt="Dr. Arthur Davies" class="doctor-img" onerror="this.src='https://ui-avatars.com/api/?name=Dr+Arthur+Davies&background=0d9488&color=fff'">
+            </div>
+            <div class="doctor-card-body">
+              <div class="doctor-name">Dr. Arthur Davies, MD</div>
+              <div class="doctor-spec">Pediatrics & Adolescent Health</div>
+              <div class="doctor-meta-line"><i data-lucide="shield-check" style="width: 13px; height: 13px;"></i> License: MED-63109</div>
+              <div class="doctor-meta-line"><i data-lucide="clock" style="width: 13px; height: 13px;"></i> Mon - Fri (09:00 AM - 03:00 PM)</div>
+              <button class="btn btn-secondary btn-sm" style="width: 100%; margin-top: 12px;" onclick="selectDoctor('Dr. Arthur Davies, MD', 'Pediatrics')">
+                Select Specialist
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         INTERFACE 2: PATIENT DASHBOARD
+         ==================================================================== -->
+    <section id="view-patient" class="role-view">
+      <div class="stats-row">
+        <div class="stat-box">
+          <div class="stat-top">
+            <span class="stat-label">Patient Record</span>
+            <i data-lucide="user-check" style="width: 20px; height: 20px; color: var(--teal-primary);"></i>
+          </div>
+          <div class="stat-val" style="font-size: 1.5rem;">Mariane Millera</div>
+          <span style="font-size: 0.75rem; color: var(--text-muted); margin-top: 6px;">ID: #PT-1042 • Blood: O+ • Age: 24</span>
+        </div>
+
+        <div class="stat-box">
+          <div class="stat-top">
+            <span class="stat-label">Upcoming Appointments</span>
+            <i data-lucide="calendar" style="width: 20px; height: 20px; color: var(--blue-primary);"></i>
+          </div>
+          <div class="stat-val" id="patient-active-count">1</div>
+          <span style="font-size: 0.75rem; color: var(--text-muted); margin-top: 6px;">Active consultation scheduled</span>
+        </div>
+
+        <div class="stat-box">
+          <div class="stat-top">
+            <span class="stat-label">Prescription History</span>
+            <i data-lucide="pill" style="width: 20px; height: 20px; color: var(--teal-primary);"></i>
+          </div>
+          <div class="stat-val">3</div>
+          <span style="font-size: 0.75rem; color: var(--text-muted); margin-top: 6px;">Active prescriptions on file</span>
+        </div>
+      </div>
+
+      <div class="card-panel">
+        <div class="card-header-row">
+          <h2 class="card-heading">My Scheduled Consultations</h2>
+          <button class="btn btn-teal btn-sm" onclick="switchRole('public')">
+            <i data-lucide="plus" style="width: 14px; height: 14px;"></i> Book New Visit
+          </button>
+        </div>
+
+        <div class="table-container">
+          <table class="clinical-table">
+            <thead>
+              <tr>
+                <th>Doctor</th>
+                <th>Service</th>
+                <th>Scheduled Date</th>
+                <th>Reason / Chief Complaint</th>
+                <th>Status</th>
+                <th style="text-align: right;">Action</th>
+              </tr>
+            </thead>
+            <tbody id="patient-appointments-table">
+              <!-- Dynamically populated from JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         INTERFACE 3: DOCTOR / CLINICAL STAFF DASHBOARD
+         ==================================================================== -->
+    <section id="view-doctor" class="role-view">
+      <div class="stats-row">
+        <div class="stat-box">
+          <div class="stat-top">
+            <span class="stat-label">Clinical Provider</span>
+            <i data-lucide="stethoscope" style="width: 20px; height: 20px; color: var(--teal-primary);"></i>
+          </div>
+          <div class="stat-val" style="font-size: 1.5rem;">Dr. Sarah Ramos, MD</div>
+          <span style="font-size: 0.75rem; color: var(--text-muted); margin-top: 6px;">Department of Cardiology • License MED-84920</span>
+        </div>
+
+        <div class="stat-box">
+          <div class="stat-top">
+            <span class="stat-label">Today's Patient Queue</span>
+            <i data-lucide="users" style="width: 20px; height: 20px; color: var(--blue-primary);"></i>
+          </div>
+          <div class="stat-val" id="doctor-queue-count">3</div>
+          <span style="font-size: 0.75rem; color: var(--text-muted); margin-top: 6px;">Consultations scheduled for today</span>
+        </div>
+
+        <div class="stat-box">
+          <div class="stat-top">
+            <span class="stat-label">Completed Consultations</span>
+            <i data-lucide="check-circle" style="width: 20px; height: 20px; color: var(--teal-primary);"></i>
+          </div>
+          <div class="stat-val" id="doctor-completed-count">14</div>
+          <span style="font-size: 0.75rem; color: var(--text-muted); margin-top: 6px;">This month's completed sessions</span>
+        </div>
+      </div>
+
+      <div class="card-panel">
+        <div class="card-header-row">
+          <h2 class="card-heading">Doctor Patient Schedule & Consultations Queue</h2>
+        </div>
+
+        <div class="table-container">
+          <table class="clinical-table">
+            <thead>
+              <tr>
+                <th>Patient Name</th>
+                <th>Date & Time</th>
+                <th>Clinical Service</th>
+                <th>Reported Symptoms</th>
+                <th>Status</th>
+                <th style="text-align: right;">Clinical Action</th>
+              </tr>
+            </thead>
+            <tbody id="doctor-schedule-table">
+              <!-- Dynamically populated from JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         INTERFACE 4: HOSPITAL ADMIN DASHBOARD
+         ==================================================================== -->
+    <section id="view-admin" class="role-view">
+      <div class="stats-row">
+        <div class="stat-box">
+          <div class="stat-top">
+            <span class="stat-label">Total Doctors</span>
+            <i data-lucide="user-plus" style="width: 20px; height: 20px; color: var(--teal-primary);"></i>
+          </div>
+          <div class="stat-val">12</div>
+          <span style="font-size: 0.75rem; color: var(--text-muted); margin-top: 6px;">Accredited active staff</span>
+        </div>
+
+        <div class="stat-box">
+          <div class="stat-top">
+            <span class="stat-label">Registered Patients</span>
+            <i data-lucide="users" style="width: 20px; height: 20px; color: var(--blue-primary);"></i>
+          </div>
+          <div class="stat-val">248</div>
+          <span style="font-size: 0.75rem; color: var(--text-muted); margin-top: 6px;">Total patient records in system</span>
+        </div>
+
+        <div class="stat-box">
+          <div class="stat-top">
+            <span class="stat-label">System Appointments</span>
+            <i data-lucide="clipboard-list" style="width: 20px; height: 20px; color: var(--teal-primary);"></i>
+          </div>
+          <div class="stat-val" id="admin-total-appts">18</div>
+          <span style="font-size: 0.75rem; color: var(--text-muted); margin-top: 6px;">Bookings logged across departments</span>
+        </div>
+      </div>
+
+      <div class="card-panel">
+        <div class="card-header-row">
+          <h2 class="card-heading">Hospital Staff Directory</h2>
+        </div>
+
+        <div class="table-container">
+          <table class="clinical-table">
+            <thead>
+              <tr>
+                <th>Doctor</th>
+                <th>Specialization</th>
+                <th>Medical License</th>
+                <th>Weekly Availability</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Dr. Sarah Ramos</strong></td>
+                <td>Cardiology & Cardiovascular Care</td>
+                <td>MED-84920</td>
+                <td>Mon - Fri (09:00 - 16:00)</td>
+                <td><span class="badge badge-approved">Active Provider</span></td>
+              </tr>
+              <tr>
+                <td><strong>Dr. Julian Santos</strong></td>
+                <td>General Internal Medicine</td>
+                <td>MED-71044</td>
+                <td>Mon - Sat (08:00 - 14:00)</td>
+                <td><span class="badge badge-approved">Active Provider</span></td>
+              </tr>
+              <tr>
+                <td><strong>Dr. Elena Vance</strong></td>
+                <td>Dermatology & Skin Health</td>
+                <td>MED-90218</td>
+                <td>Tue - Thu (10:00 - 17:00)</td>
+                <td><span class="badge badge-approved">Active Provider</span></td>
+              </tr>
+              <tr>
+                <td><strong>Dr. Arthur Davies</strong></td>
+                <td>Pediatrics & Child Wellness</td>
+                <td>MED-63109</td>
+                <td>Mon - Fri (09:00 - 15:00)</td>
+                <td><span class="badge badge-approved">Active Provider</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // Initial Healthcare Appointment Store
+    const DEFAULT_APPOINTMENTS = [
+      {
+        id: 1,
+        patientName: 'Mariane Millera',
+        email: 'mariane.millera@gmail.com',
+        phone: '+1 555-0192',
+        doctor: 'Dr. Sarah Ramos, MD',
+        service: 'Cardiology',
+        date: '2026-09-30',
+        reason: 'Follow-up on resting heart rate rhythm and mild chest tightness after light exercise.',
+        status: 'approved'
+      },
+      {
+        id: 2,
+        patientName: 'Trish Anne Revilla',
+        email: 'trish.revilla@gmail.com',
+        phone: '+1 555-0841',
+        doctor: 'Dr. Julian Santos, MD',
+        service: 'General Medicine',
+        date: '2026-10-02',
+        reason: 'Annual preventive bloodwork panel and comprehensive wellness review.',
+        status: 'pending'
+      },
+      {
+        id: 3,
+        patientName: 'Lady Liberty Caragay',
+        email: 'ladycaragay23@gmail.com',
+        phone: '+1 555-0423',
+        doctor: 'Dr. Sarah Ramos, MD',
+        service: 'Cardiology',
+        date: '2026-09-22',
+        reason: 'Routine pre-sports cardiovascular clearance check.',
+        status: 'completed'
+      }
+    ];
+
+    let appointments = [];
+    try {
+      const stored = localStorage.getItem('healthcare_appts');
+      appointments = stored ? JSON.parse(stored) : DEFAULT_APPOINTMENTS;
+    } catch(e) {
+      appointments = DEFAULT_APPOINTMENTS;
+    }
+
+    function saveAppointments() {
+      localStorage.setItem('healthcare_appts', JSON.stringify(appointments));
+      renderTables();
+    }
+
+    // Role Switching
+    function switchRole(roleKey) {
+      document.querySelectorAll('.role-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-target') === roleKey);
+      });
+      document.querySelectorAll('.role-view').forEach(v => {
+        v.classList.remove('active');
+        if (v.id === `view-${roleKey}`) v.classList.add('active');
+      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    document.querySelectorAll('.role-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        switchRole(btn.getAttribute('data-target'));
+      });
+    });
+
+    function selectDoctor(doctorName, service) {
+      const docSelect = document.getElementById('book-doctor');
+      const srvSelect = document.getElementById('book-service');
+      if (docSelect) docSelect.value = doctorName;
+      if (srvSelect) srvSelect.value = service;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Render Tables
+    function renderTables() {
+      // Patient View
+      const patientTable = document.getElementById('patient-appointments-table');
+      if (patientTable) {
+        patientTable.innerHTML = appointments.map(a => `
+          <tr>
+            <td><strong>${a.doctor}</strong></td>
+            <td><span class="badge badge-approved">${a.service}</span></td>
+            <td>${a.date}</td>
+            <td style="max-width: 320px;">${a.reason}</td>
+            <td><span class="badge badge-${a.status}">${a.status}</span></td>
+            <td style="text-align: right;">
+              ${a.status !== 'cancelled' ? `
+                <button class="btn btn-secondary btn-sm" onclick="cancelAppointment(${a.id})" style="color: var(--rose-danger);">
+                  Cancel
+                </button>
+              ` : '<span style="font-size: 0.75rem; color: var(--text-muted);">Cancelled</span>'}
+            </td>
+          </tr>
+        `).join('');
+      }
+
+      // Doctor View
+      const docTable = document.getElementById('doctor-schedule-table');
+      if (docTable) {
+        docTable.innerHTML = appointments.map(a => `
+          <tr>
+            <td>
+              <strong>${a.patientName}</strong>
+              <div style="font-size: 0.75rem; color: var(--text-muted);">${a.email}</div>
+            </td>
+            <td>${a.date}</td>
+            <td>${a.service}</td>
+            <td style="max-width: 320px;">${a.reason}</td>
+            <td><span class="badge badge-${a.status}">${a.status}</span></td>
+            <td style="text-align: right;">
+              ${a.status === 'pending' ? `
+                <button class="btn btn-teal btn-sm" onclick="approveAppointment(${a.id})">Approve</button>
+              ` : a.status === 'approved' ? `
+                <button class="btn btn-secondary btn-sm" onclick="completeAppointment(${a.id})">Mark Done</button>
+              ` : '<span style="font-size: 0.75rem; color: var(--text-muted);">Archived</span>'}
+            </td>
+          </tr>
+        `).join('');
+      }
+
+      // Update Counts
+      const activeCount = appointments.filter(a => a.status === 'approved' || a.status === 'pending').length;
+      const completedCount = appointments.filter(a => a.status === 'completed').length;
+      
+      const patActive = document.getElementById('patient-active-count');
+      if (patActive) patActive.textContent = activeCount;
+
+      const docQueue = document.getElementById('doctor-queue-count');
+      if (docQueue) docQueue.textContent = activeCount;
+
+      const docDone = document.getElementById('doctor-completed-count');
+      if (docDone) docDone.textContent = completedCount;
+
+      const adminTotal = document.getElementById('admin-total-appts');
+      if (adminTotal) adminTotal.textContent = appointments.length;
+
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function approveAppointment(id) {
+      appointments = appointments.map(a => a.id === id ? { ...a, status: 'approved' } : a);
+      saveAppointments();
+    }
+
+    function completeAppointment(id) {
+      appointments = appointments.map(a => a.id === id ? { ...a, status: 'completed' } : a);
+      saveAppointments();
+    }
+
+    function cancelAppointment(id) {
+      if (confirm('Cancel this consultation appointment?')) {
+        appointments = appointments.map(a => a.id === id ? { ...a, status: 'cancelled' } : a);
+        saveAppointments();
+      }
+    }
+
+    // Public Booking Form Submit
+    document.getElementById('public-booking-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const newAppt = {
+        id: Date.now(),
+        patientName: document.getElementById('book-name').value.trim(),
+        email: document.getElementById('book-email').value.trim(),
+        phone: document.getElementById('book-phone').value.trim(),
+        service: document.getElementById('book-service').value,
+        doctor: document.getElementById('book-doctor').value,
+        date: document.getElementById('book-date').value,
+        reason: document.getElementById('book-reason').value.trim(),
+        status: 'approved'
+      };
+
+      appointments.unshift(newAppt);
+      saveAppointments();
+      alert(`Appointment successfully confirmed with ${newAppt.doctor} for ${newAppt.date}!`);
+      document.getElementById('public-booking-form').reset();
+      switchRole('patient');
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderTables();
+    });
+  </script>
+</body>
+</html>
