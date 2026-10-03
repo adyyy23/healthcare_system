@@ -39,14 +39,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     } else {
         // Safe demo fallback when local database server is unconfigured
-        if (!empty($email) && !empty($password)) {
+        $emailLow = strtolower($email);
+        if ($emailLow === 'patient@healthcare.com' && $password === 'patient123') {
             $_SESSION['user_id'] = 1;
             $_SESSION['role'] = 'patient';
             $_SESSION['user_name'] = 'Mariane Millera';
-            header('Location: index.html?role=patient');
+            header('Location: patient.html');
+            exit();
+        } else if (($emailLow === 'doctor@healthcare.com' || $emailLow === 'santos@healthcare.com' || $emailLow === 'vance@healthcare.com') && $password === 'doctor123') {
+            $_SESSION['user_id'] = 2;
+            $_SESSION['role'] = 'doctor';
+            $_SESSION['user_name'] = 'Dr. Sarah Ramos, MD';
+            header('Location: doctor.html');
+            exit();
+        } else if ($emailLow === 'admin@healthcare.com' && $password === 'admin123') {
+            $_SESSION['user_id'] = 3;
+            $_SESSION['role'] = 'admin';
+            $_SESSION['user_name'] = 'Dr. Evelyn Reed';
+            header('Location: admin.html');
             exit();
         } else {
-            $error = "Please provide an email and password.";
+            $error = "Invalid demo credentials. Use patient@healthcare.com, doctor@healthcare.com, or admin@healthcare.com.";
         }
     }
 }

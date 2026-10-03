@@ -1,11 +1,20 @@
 // Service Worker for HealthCare Portal PWA
-const CACHE_NAME = 'healthcare-portal-v1.2';
+const CACHE_NAME = 'healthcare-portal-v2.0';
 const APP_SHELL = [
   './',
   './index.html',
+  './patient.html',
+  './doctor.html',
+  './admin.html',
+  './login.html',
+  './signup.html',
   './manifest.webmanifest',
   './assets/css/design-system.css',
-  './assets/js/app.js',
+  './assets/js/core-data.js',
+  './assets/js/public-app.js',
+  './assets/js/patient-app.js',
+  './assets/js/doctor-app.js',
+  './assets/js/admin-app.js',
   './assets/icons/icon-192.png',
   './assets/icons/icon-512.png',
   './assets/icons/apple-touch-icon.png',
@@ -27,7 +36,7 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// Activate Event - clean up obsolete caches
+// Activate Event
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
@@ -42,27 +51,22 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch Event - Stale-While-Revalidate & Cache Fallback
+// Fetch Event
 self.addEventListener('fetch', (event) => {
   const request = event.request;
   const url = new URL(request.url);
 
-  // Ignore non-GET and cross-origin analytics/CDNs if necessary, or cache CDN fonts/Leaflet
   if (request.method !== 'GET') return;
 
   if (url.origin === location.origin) {
-    // For local app shell requests: Cache first, fallback to network
     event.respondWith(
       caches.match(request).then((cachedResponse) => {
         if (cachedResponse) {
-          // Revalidate in background
           fetch(request).then((networkResponse) => {
             if (networkResponse && networkResponse.status === 200) {
               caches.open(CACHE_NAME).then((cache) => cache.put(request, networkResponse));
             }
-          }).catch(() => {
-            // Offline - cached response is already returned
-          });
+          }).catch(() => {});
           return cachedResponse;
         }
 
@@ -73,7 +77,6 @@ self.addEventListener('fetch', (event) => {
           }
           return networkResponse;
         }).catch(() => {
-          // If offline and requesting navigation, return index.html
           if (request.mode === 'navigate') {
             return caches.match('./index.html');
           }
@@ -82,7 +85,6 @@ self.addEventListener('fetch', (event) => {
       })
     );
   } else {
-    // CDN or external resources (e.g. Leaflet, Lucide, Google Fonts)
     event.respondWith(
       caches.match(request).then((cachedResponse) => {
         return cachedResponse || fetch(request).then((networkResponse) => {

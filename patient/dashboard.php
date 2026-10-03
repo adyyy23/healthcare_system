@@ -3,7 +3,7 @@ session_start();
 require_once '../config/database.php';
 
 if (!$pdo) {
-    header('Location: ../index.html?role=patient');
+    header('Location: ../patient.html');
     exit();
 }
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'patient') {

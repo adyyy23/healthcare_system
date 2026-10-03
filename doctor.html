@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Doctor Clinical Workspace — HealthCare Portal</title>
+
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#2563eb">
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+  <link rel="icon" type="image/svg+xml" href="assets/icons/icon.svg">
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="assets/css/design-system.css">
+
+  <style>
+    .doctor-subview {
+      display: none;
+      animation: fadeInStep 0.2s ease;
+    }
+    .doctor-subview.active {
+      display: block;
+    }
+    .timeline-node {
+      display: flex;
+      gap: 16px;
+      padding: 14px 18px;
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      margin-bottom: 10px;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Doctor Top Navigation Header -->
+  <header class="app-header">
+    <div class="brand-section">
+      <div class="brand-logo-bubble">
+        <i data-lucide="stethoscope" style="width: 22px; height: 22px;"></i>
+      </div>
+      <div class="brand-info">
+        <span class="brand-title">Clinical Workspace</span>
+        <span class="brand-tagline">Provider Station</span>
+      </div>
+    </div>
+
+    <!-- Doctor Sub-Tabs -->
+    <nav class="role-nav-pill" style="display: flex;">
+      <button class="nav-role-btn active" data-dtab="schedule" onclick="switchDoctorTab('schedule')">
+        <i data-lucide="calendar" style="width: 14px; height: 14px;"></i> Today's Schedule
+      </button>
+      <button class="nav-role-btn" data-dtab="patients" onclick="switchDoctorTab('patients')">
+        <i data-lucide="users" style="width: 14px; height: 14px;"></i> My Patients
+      </button>
+      <button class="nav-role-btn" data-dtab="messages" onclick="switchDoctorTab('messages')">
+        <i data-lucide="message-square" style="width: 14px; height: 14px;"></i> Patient Messages
+      </button>
+      <button class="nav-role-btn" data-dtab="availability" onclick="switchDoctorTab('availability')">
+        <i data-lucide="clock" style="width: 14px; height: 14px;"></i> Availability
+      </button>
+    </nav>
+
+    <!-- Doctor Profile Chip & Logout -->
+    <div class="header-actions">
+      <div class="user-profile-chip" style="cursor: default;">
+        <div class="avatar-circle">SR</div>
+        <span style="font-size: 0.8125rem; font-weight: 700;">Dr. Sarah Ramos, MD</span>
+      </div>
+      <button class="header-icon-btn" onclick="window.HC_CORE.logout()" title="Log Out">
+        <i data-lucide="log-out" style="width: 16px; height: 16px;"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Doctor Container -->
+  <main class="portal-container">
+
+    <!-- Subview 1: Today's Schedule & Patient Queue -->
+    <section id="doctor-subview-schedule" class="doctor-subview active">
+      <div class="sheet-header-row">
+        <div class="sheet-title-group">
+          <h1>Good morning, Dr. Ramos</h1>
+          <p class="sheet-subtitle">Cardiology Department • St. Jude Medical Center • 4 Consultations Scheduled Today</p>
+        </div>
+        <span class="status-badge confirmed">On Duty • Suite 400</span>
+      </div>
+
+      <!-- Quick Metrics Bar -->
+      <div class="user-metric-bubble-bar">
+        <div class="metric-stat">
+          <span id="doc-metric-today" class="metric-val">4</span>
+          <span class="metric-label">Today's Queue</span>
+        </div>
+        <div class="metric-stat">
+          <span class="metric-val">10:30 AM</span>
+          <span class="metric-label">Next Patient</span>
+        </div>
+        <div class="metric-stat">
+          <span class="metric-val">14</span>
+          <span class="metric-label">Completed this Week</span>
+        </div>
+        <div class="metric-stat">
+          <span class="metric-val">99%</span>
+          <span class="metric-label">Punctuality</span>
+        </div>
+      </div>
+
+      <!-- Next Patient Spotlight -->
+      <div class="next-appointment-card" style="margin-bottom: 24px;">
+        <div class="next-card-content">
+          <div class="next-date-badge">
+            <span class="next-date-month">NEXT</span>
+            <span class="next-date-day">10:30</span>
+          </div>
+          <div class="next-info-wrap">
+            <div class="next-label-pill">Upcoming Consultation</div>
+            <div class="next-doctor-title">Mariane Millera (Age 24)</div>
+            <div class="next-meta-row" style="font-size: 0.75rem;">
+              <span><strong>Specialty:</strong> Cardiology Follow-up</span>
+              <span>•</span>
+              <span><strong>Format:</strong> Telehealth HD Video</span>
+              <span>•</span>
+              <span><strong>ID:</strong> #PT-1042</span>
+            </div>
+            <div style="font-size: 0.8125rem; color: var(--text-secondary); margin-top: 6px;">
+              <strong>Chief Complaint:</strong> Resting heart rate rhythm evaluation and follow-up on exercise tolerance.
+            </div>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button class="bubble-btn bubble-btn-primary" onclick="openClinicalNotesModal(1)">
+              <i data-lucide="file-edit" style="width: 14px; height: 14px;"></i> Clinical Notes
+            </button>
+            <button class="bubble-btn bubble-btn-subtle" onclick="markApptComplete(1)">
+              Mark Complete
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Today's Daily Schedule Timeline -->
+      <div class="section-header">
+        <h2 class="section-title">Today's Daily Timeline</h2>
+      </div>
+      <div id="doctor-timeline-container" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px;">
+        <!-- Injected via JS -->
+      </div>
+
+      <!-- Patient Queue Management Table -->
+      <div class="section-header">
+        <h2 class="section-title">All Patient Consultations</h2>
+      </div>
+      <div class="table-responsive-wrapper">
+        <table class="admin-data-table">
+          <thead>
+            <tr>
+              <th>Patient</th>
+              <th>Date & Time</th>
+              <th>Format</th>
+              <th>Chief Complaint</th>
+              <th>Status</th>
+              <th style="text-align: right;">Clinical Action</th>
+            </tr>
+          </thead>
+          <tbody id="doctor-queue-tbody">
+            <!-- Injected via JS -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Subview 2: My Authorized Patients -->
+    <section id="doctor-subview-patients" class="doctor-subview">
+      <div class="sheet-header-row">
+        <div class="sheet-title-group">
+          <h1>My Patients Directory</h1>
+          <p class="sheet-subtitle">Patient records under Dr. Sarah Ramos's cardiology care plan.</p>
+        </div>
+      </div>
+
+      <div id="doctor-patients-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px;">
+        <!-- Injected via JS -->
+      </div>
+    </section>
+
+    <!-- Subview 3: Doctor In-App Messages -->
+    <section id="doctor-subview-messages" class="doctor-subview">
+      <div class="sheet-header-row">
+        <div class="sheet-title-group">
+          <h1>Patient Communications</h1>
+          <p class="sheet-subtitle">Direct encrypted messaging with your scheduled patients.</p>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 320px 1fr; gap: 20px; background: #ffffff; border-radius: var(--radius-xl); border: 1px solid var(--border-subtle); overflow: hidden; min-height: 480px;">
+        <!-- Convo selector list -->
+        <div id="doctor-convo-sidebar" style="border-right: 1px solid var(--border-subtle); padding: 16px; background: #f8fafc;">
+          <!-- Injected via JS -->
+        </div>
+
+        <!-- Chat Area -->
+        <div style="padding: 20px; display: flex; flex-direction: column; justify-content: space-between;">
+          <div id="doc-active-chat-header" style="padding-bottom: 12px; border-bottom: 1px solid var(--border-subtle); font-weight: 700;">
+            Mariane Millera (#PT-1042)
+          </div>
+          <div id="doc-chat-messages-box" style="height: 340px; overflow-y: auto; padding: 12px 0;">
+            <!-- Injected via JS -->
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <input type="text" id="doc-msg-input" class="form-input" placeholder="Type message to patient..." onkeydown="if(event.key==='Enter') sendDoctorMessage()">
+            <button class="bubble-btn bubble-btn-primary" onclick="sendDoctorMessage()">
+              <i data-lucide="send" style="width: 14px; height: 14px;"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Subview 4: Availability Manager -->
+    <section id="doctor-subview-availability" class="doctor-subview">
+      <div class="sheet-header-row">
+        <div class="sheet-title-group">
+          <h1>Clinical Availability & Hours</h1>
+          <p class="sheet-subtitle">Manage your consultation blocks, working hours, and leave days.</p>
+        </div>
+        <button class="bubble-btn bubble-btn-primary" onclick="alert('Working schedule updated.')">
+          Save Schedule Changes
+        </button>
+      </div>
+
+      <div class="clinic-card" style="padding: 24px; max-width: 680px;">
+        <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 14px;">Weekly Consultation Windows</h3>
+        
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #f8fafc; border-radius: 12px;">
+            <span style="font-weight: 700;">Monday - Friday</span>
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <input type="text" class="form-input" value="09:00 AM" style="width: 100px; padding: 6px;">
+              <span>to</span>
+              <input type="text" class="form-input" value="04:00 PM" style="width: 100px; padding: 6px;">
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #f8fafc; border-radius: 12px;">
+            <span style="font-weight: 700;">Saturday Clinic</span>
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <input type="text" class="form-input" value="09:00 AM" style="width: 100px; padding: 6px;">
+              <span>to</span>
+              <input type="text" class="form-input" value="01:00 PM" style="width: 100px; padding: 6px;">
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #f8fafc; border-radius: 12px;">
+            <span style="font-weight: 700;">Appointment Slot Duration</span>
+            <select class="form-select" style="width: 160px; padding: 6px;">
+              <option value="30">30 Minutes</option>
+              <option value="45" selected>45 Minutes</option>
+              <option value="60">60 Minutes</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL: CLINICAL NOTES -->
+  <div id="doctor-clinical-notes-modal" class="modal-overlay">
+    <div class="modal-surface" style="max-width: 500px;">
+      <div class="modal-header">
+        <h3 style="font-size: 1rem; font-weight: 700;">Clinical Consultation Notes</h3>
+        <button class="modal-close-btn" onclick="closeClinicalNotesModal()">
+          <i data-lucide="x" style="width: 16px; height: 16px;"></i>
+        </button>
+      </div>
+      <div class="form-field" style="margin-bottom: 14px;">
+        <label class="form-label">Physician Diagnosis & Clinical Plan</label>
+        <textarea id="clinical-notes-textarea" class="form-textarea" rows="5" placeholder="Record diagnostic summary, patient vitals, medication prescriptions..."></textarea>
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 8px;">
+        <button class="bubble-btn bubble-btn-subtle" onclick="closeClinicalNotesModal()">Cancel</button>
+        <button class="bubble-btn bubble-btn-primary" onclick="saveDoctorClinicalNotes()">Save Notes</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/js/core-data.js"></script>
+  <script src="assets/js/doctor-app.js"></script>
+</body>
+</html>

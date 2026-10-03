@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Patient Registration — HealthCare Portal</title>
+  
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#2563eb">
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+  <link rel="icon" type="image/svg+xml" href="assets/icons/icon.svg">
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="assets/css/design-system.css">
+  
+  <style>
+    body {
+      background: var(--bg-app);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 24px 16px;
+    }
+    .auth-card {
+      width: 100%;
+      max-width: 480px;
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-xl);
+      padding: 36px 32px;
+      box-shadow: var(--shadow-floating);
+      animation: fadeInStep 0.22s ease;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="auth-card">
+    <div style="text-align: center; margin-bottom: 24px;">
+      <a href="index.html" class="brand-logo-bubble" style="width: 52px; height: 52px; margin: 0 auto 14px; border-radius: var(--radius-lg); display: flex;">
+        <i data-lucide="plus" style="width: 28px; height: 28px; stroke-width: 3;"></i>
+      </a>
+      <h1 style="font-size: 1.375rem; font-weight: 800; color: #0f172a; letter-spacing: -0.02em;">Create Patient Account</h1>
+      <p style="font-size: 0.8125rem; color: var(--text-muted); margin-top: 4px;">Access your digital consultations and medical records</p>
+    </div>
+
+    <form id="signup-form" onsubmit="handleSignupSubmit(event)">
+      <div class="form-field" style="margin-bottom: 14px;">
+        <label class="form-label">Full Name *</label>
+        <input type="text" id="reg-name" required class="form-input" placeholder="e.g. Mariane Millera">
+      </div>
+
+      <div class="form-field" style="margin-bottom: 14px;">
+        <label class="form-label">Email Address *</label>
+        <input type="email" id="reg-email" required class="form-input" placeholder="patient@gmail.com">
+      </div>
+
+      <div class="form-field" style="margin-bottom: 14px;">
+        <label class="form-label">Contact Phone *</label>
+        <input type="tel" id="reg-phone" required class="form-input" placeholder="+1 (555) 019-2834">
+      </div>
+
+      <div class="form-field" style="margin-bottom: 24px;">
+        <label class="form-label">Password *</label>
+        <input type="password" id="reg-password" required minlength="6" class="form-input" placeholder="At least 6 characters">
+      </div>
+
+      <button type="submit" class="bubble-btn bubble-btn-primary" style="width: 100%; padding: 12px; justify-content: center; font-size: 0.9375rem;">
+        Complete Registration
+      </button>
+    </form>
+
+    <div style="text-align: center; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border-subtle); font-size: 0.8125rem; color: var(--text-muted);">
+      Already registered? <a href="login.html" style="color: var(--accent-primary); font-weight: 700;">Sign In</a>
+    </div>
+  </div>
+
+  <script src="assets/js/core-data.js"></script>
+  <script>
+    function handleSignupSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('reg-name').value;
+      const email = document.getElementById('reg-email').value;
+      const phone = document.getElementById('reg-phone').value;
+
+      // Automatically create patient session
+      window.HC_CORE.session = {
+        id: `user-${Date.now()}`,
+        name: name,
+        email: email,
+        phone: phone,
+        role: 'patient',
+        patientId: `PT-${Math.floor(1000 + Math.random() * 9000)}`,
+        avatar: name.split(' ').map(n=>n[0]).join('').substring(0, 2).toUpperCase()
+      };
+      window.HC_CORE.save('hc_session', window.HC_CORE.session);
+      window.location.href = 'patient.html';
+    }
+    if (window.lucide) window.lucide.createIcons();
+  </script>
+</body>
+</html>

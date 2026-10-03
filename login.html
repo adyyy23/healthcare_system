@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Sign In — HealthCare Portal</title>
+  
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#2563eb">
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+  <link rel="icon" type="image/svg+xml" href="assets/icons/icon.svg">
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="assets/css/design-system.css">
+  
+  <style>
+    body {
+      background: var(--bg-app);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 24px 16px;
+    }
+    .auth-card {
+      width: 100%;
+      max-width: 480px;
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-xl);
+      padding: 36px 32px;
+      box-shadow: var(--shadow-floating);
+      animation: fadeInStep 0.22s ease;
+    }
+    .demo-chip-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: var(--radius-md);
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-subtle);
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      transition: all 0.15s ease;
+      cursor: pointer;
+      text-align: left;
+    }
+    .demo-chip-btn:hover {
+      background: #ffffff;
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+      transform: translateY(-1px);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="auth-card">
+    <div style="text-align: center; margin-bottom: 24px;">
+      <a href="index.html" class="brand-logo-bubble" style="width: 52px; height: 52px; margin: 0 auto 14px; border-radius: var(--radius-lg); display: flex;">
+        <i data-lucide="plus" style="width: 28px; height: 28px; stroke-width: 3;"></i>
+      </a>
+      <h1 style="font-size: 1.375rem; font-weight: 800; color: #0f172a; letter-spacing: -0.02em;">Role-Based Portal Access</h1>
+      <p style="font-size: 0.8125rem; color: var(--text-muted); margin-top: 4px;">Sign in with your verified clinical or patient account</p>
+    </div>
+
+    <div id="auth-alert" style="display: none; padding: 12px 14px; background: #fef2f2; border: 1px solid #fecaca; border-radius: var(--radius-md); color: #dc2626; font-size: 0.8125rem; margin-bottom: 20px; align-items: center; gap: 8px;">
+      <i data-lucide="alert-circle" style="width: 16px; height: 16px; flex-shrink: 0;"></i>
+      <span id="auth-alert-text"></span>
+    </div>
+
+    <!-- Quick Demo Accounts Selector -->
+    <div style="margin-bottom: 20px;">
+      <span style="font-size: 0.6875rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 8px;">
+        Instant Demo Logins (Click to Autofill):
+      </span>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+        <button type="button" class="demo-chip-btn" onclick="fillDemo('patient@healthcare.com', 'patient123')">
+          <i data-lucide="user" style="width: 14px; height: 14px; color: #2563eb;"></i>
+          <div>
+            <div>Patient Demo</div>
+            <div style="font-size: 0.6875rem; color: var(--text-muted); font-weight: 500;">Mariane Millera</div>
+          </div>
+        </button>
+
+        <button type="button" class="demo-chip-btn" onclick="fillDemo('doctor@healthcare.com', 'doctor123')">
+          <i data-lucide="stethoscope" style="width: 14px; height: 14px; color: #10b981;"></i>
+          <div>
+            <div>Doctor (Cardio)</div>
+            <div style="font-size: 0.6875rem; color: var(--text-muted); font-weight: 500;">Dr. Sarah Ramos</div>
+          </div>
+        </button>
+
+        <button type="button" class="demo-chip-btn" onclick="fillDemo('santos@healthcare.com', 'doctor123')">
+          <i data-lucide="stethoscope" style="width: 14px; height: 14px; color: #10b981;"></i>
+          <div>
+            <div>Doctor (General)</div>
+            <div style="font-size: 0.6875rem; color: var(--text-muted); font-weight: 500;">Dr. Julian Santos</div>
+          </div>
+        </button>
+
+        <button type="button" class="demo-chip-btn" onclick="fillDemo('admin@healthcare.com', 'admin123')">
+          <i data-lucide="shield" style="width: 14px; height: 14px; color: #f59e0b;"></i>
+          <div>
+            <div>Hospital Admin</div>
+            <div style="font-size: 0.6875rem; color: var(--text-muted); font-weight: 500;">Dr. Evelyn Reed</div>
+          </div>
+        </button>
+      </div>
+    </div>
+
+    <form id="login-form" onsubmit="handleLoginSubmit(event)">
+      <div class="form-field" style="margin-bottom: 16px;">
+        <label class="form-label">Email Address</label>
+        <div style="position: relative;">
+          <i data-lucide="mail" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--text-muted);"></i>
+          <input type="email" id="login-email" required class="form-input" style="padding-left: 42px;" placeholder="name@healthcare.com" value="patient@healthcare.com">
+        </div>
+      </div>
+
+      <div class="form-field" style="margin-bottom: 24px;">
+        <label class="form-label">Password</label>
+        <div style="position: relative;">
+          <i data-lucide="lock" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--text-muted);"></i>
+          <input type="password" id="login-password" required class="form-input" style="padding-left: 42px;" placeholder="••••••••" value="patient123">
+        </div>
+      </div>
+
+      <button type="submit" class="bubble-btn bubble-btn-primary" style="width: 100%; padding: 12px; justify-content: center; font-size: 0.9375rem;">
+        Sign In to Portal
+      </button>
+    </form>
+
+    <div style="text-align: center; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border-subtle); font-size: 0.8125rem; color: var(--text-muted);">
+      Need a patient account? <a href="signup.html" style="color: var(--accent-primary); font-weight: 700;">Register as Patient</a>
+    </div>
+
+    <div style="text-align: center; margin-top: 14px;">
+      <a href="index.html" style="font-size: 0.75rem; color: var(--text-muted); display: inline-flex; align-items: center; gap: 4px;">
+        <i data-lucide="arrow-left" style="width: 12px; height: 12px;"></i> Back to Public Clinic Explorer
+      </a>
+    </div>
+  </div>
+
+  <script src="assets/js/core-data.js"></script>
+  <script>
+    function fillDemo(email, pass) {
+      document.getElementById('login-email').value = email;
+      document.getElementById('login-password').value = pass;
+    }
+
+    function handleLoginSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById('login-email').value;
+      const pass = document.getElementById('login-password').value;
+
+      const result = window.HC_CORE.login(email, pass);
+      if (result.success) {
+        // Strict role routing
+        if (result.user.role === 'patient') {
+          window.location.href = 'patient.html';
+        } else if (result.user.role === 'doctor') {
+          window.location.href = 'doctor.html';
+        } else if (result.user.role === 'admin') {
+          window.location.href = 'admin.html';
+        }
+      } else {
+        const alertBox = document.getElementById('auth-alert');
+        const alertText = document.getElementById('auth-alert-text');
+        alertText.textContent = result.error;
+        alertBox.style.display = 'flex';
+      }
+    }
+
+    // Check if redirected due to unauthorized access
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('notice') === 'unauthorized') {
+      const alertBox = document.getElementById('auth-alert');
+      const alertText = document.getElementById('auth-alert-text');
+      alertText.textContent = 'Please log in with appropriate role credentials to access that portal.';
+      alertBox.style.display = 'flex';
+    }
+
+    if (window.lucide) window.lucide.createIcons();
+  </script>
+</body>
+</html>

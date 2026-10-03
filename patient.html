@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>HealthCare Patient — Mobile Health App</title>
+
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#2563eb">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+  <link rel="icon" type="image/svg+xml" href="assets/icons/icon.svg">
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <link rel="stylesheet" href="assets/css/design-system.css">
+
+  <style>
+    /* Patient Phone View Only Canvas */
+    body {
+      background: #e2e8f0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 0;
+      margin: 0;
+    }
+
+    .phone-app-shell {
+      width: 100%;
+      max-width: 440px;
+      min-height: 100vh;
+      background: var(--bg-app);
+      position: relative;
+      overflow-x: hidden;
+      box-shadow: 0 0 40px rgba(15, 23, 42, 0.12);
+      display: flex;
+      flex-direction: column;
+      padding-bottom: 84px;
+    }
+
+    /* iOS Status Bar Simulation on Mobile Frame */
+    .ios-status-bar {
+      height: 44px;
+      padding: 10px 20px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8125rem;
+      font-weight: 700;
+      color: #0f172a;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 600;
+    }
+
+    .patient-tab-view {
+      display: none;
+      animation: fadeInStep 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .patient-tab-view.active {
+      display: block;
+    }
+
+    /* Mobile Overlapping Map */
+    .patient-map-viewport {
+      width: 100%;
+      height: 260px;
+      background: #e2eaf4;
+      position: relative;
+    }
+
+    /* Pull sheet */
+    .patient-sheet-overlap {
+      background: #ffffff;
+      border-radius: 28px 28px 0 0;
+      border: 1px solid var(--border-subtle);
+      margin-top: -32px;
+      position: relative;
+      z-index: 5;
+      padding: 20px 16px 32px;
+      box-shadow: var(--shadow-sheet);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Phone Container Shell -->
+  <div class="phone-app-shell">
+
+    <!-- iOS Status Bar -->
+    <div class="ios-status-bar">
+      <span>9:41</span>
+      <div style="display: flex; gap: 6px; align-items: center;">
+        <i data-lucide="signal" style="width: 13px; height: 13px;"></i>
+        <i data-lucide="wifi" style="width: 13px; height: 13px;"></i>
+        <i data-lucide="battery" style="width: 15px; height: 15px;"></i>
+      </div>
+    </div>
+
+    <!-- Compact Patient Header -->
+    <div style="padding: 12px 18px 8px; display: flex; justify-content: space-between; align-items: center; background: #ffffff; border-bottom: 1px solid var(--border-subtle);">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <div class="avatar-circle" style="width: 38px; height: 38px; font-weight: 800;">MM</div>
+        <div>
+          <div style="font-size: 0.9375rem; font-weight: 800; color: #0f172a; line-height: 1.1;">Mariane Millera</div>
+          <div style="font-size: 0.6875rem; color: var(--text-muted);">#PT-1042 • St. Jude Patient</div>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 8px;">
+        <button class="header-icon-btn" style="width: 36px; height: 36px;" onclick="openPatientNotifications()">
+          <i data-lucide="bell" style="width: 16px; height: 16px;"></i>
+          <span id="patient-notif-dot" class="badge-dot" style="display: none;"></span>
+        </button>
+        <button class="header-icon-btn" style="width: 36px; height: 36px;" onclick="window.HC_CORE.logout()" title="Logout">
+          <i data-lucide="log-out" style="width: 15px; height: 15px;"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- ==================================================================
+         PATIENT TAB 1: HOME
+         ================================================================== -->
+    <section id="patient-tab-home" class="patient-tab-view active">
+      <!-- Mini Map with Location Indicator -->
+      <div class="patient-map-viewport">
+        <div id="patient-home-map" style="width: 100%; height: 100%;"></div>
+        <div class="map-location-tag" style="top: 10px; left: 10px; font-size: 0.75rem; padding: 4px 10px;">
+          <i data-lucide="navigation" style="width: 12px; height: 12px; color: #2563eb;"></i>
+          <span>Manhattan, NY</span>
+        </div>
+      </div>
+
+      <div class="patient-sheet-overlap">
+        <div class="sheet-handle" style="margin-bottom: 14px;"></div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+          <div>
+            <h1 style="font-size: 1.25rem; font-weight: 800; color: #0f172a;">Good afternoon, Mariane</h1>
+            <p style="font-size: 0.75rem; color: var(--text-muted);">Cardiology care plan active</p>
+          </div>
+          <button class="bubble-btn bubble-btn-primary" style="padding: 6px 14px; font-size: 0.75rem;" onclick="switchPatientTab('explore')">
+            <i data-lucide="plus" style="width: 14px; height: 14px;"></i> Book Visit
+          </button>
+        </div>
+
+        <!-- Next Appointment Spotlight Card -->
+        <div id="patient-spotlight-appt">
+          <!-- Dynamically populated -->
+        </div>
+
+        <!-- Quick Actions Grid -->
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 18px 0;">
+          <button class="clinic-card" style="padding: 12px 6px; text-align: center; border-radius: 16px;" onclick="switchPatientTab('explore')">
+            <div style="width: 36px; height: 36px; border-radius: 50%; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center; margin: 0 auto 6px;">
+              <i data-lucide="calendar-plus" style="width: 18px; height: 18px;"></i>
+            </div>
+            <div style="font-size: 0.6875rem; font-weight: 700;">Book</div>
+          </button>
+
+          <button class="clinic-card" style="padding: 12px 6px; text-align: center; border-radius: 16px;" onclick="switchPatientTab('explore')">
+            <div style="width: 36px; height: 36px; border-radius: 50%; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center; margin: 0 auto 6px;">
+              <i data-lucide="search" style="width: 18px; height: 18px;"></i>
+            </div>
+            <div style="font-size: 0.6875rem; font-weight: 700;">Doctors</div>
+          </button>
+
+          <button class="clinic-card" style="padding: 12px 6px; text-align: center; border-radius: 16px;" onclick="openPatientTelehealth(1)">
+            <div style="width: 36px; height: 36px; border-radius: 50%; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center; margin: 0 auto 6px;">
+              <i data-lucide="video" style="width: 18px; height: 18px;"></i>
+            </div>
+            <div style="font-size: 0.6875rem; font-weight: 700;">Telehealth</div>
+          </button>
+
+          <button class="clinic-card" style="padding: 12px 6px; text-align: center; border-radius: 16px;" onclick="switchPatientTab('profile')">
+            <div style="width: 36px; height: 36px; border-radius: 50%; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center; margin: 0 auto 6px;">
+              <i data-lucide="heart" style="width: 18px; height: 18px;"></i>
+            </div>
+            <div style="font-size: 0.6875rem; font-weight: 700;">Saved</div>
+          </button>
+        </div>
+
+        <!-- Upcoming Appointments Mini List -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin: 20px 0 10px;">
+          <h2 style="font-size: 1rem; font-weight: 800; color: #0f172a;">Upcoming Appointments</h2>
+          <button class="section-link" onclick="switchPatientTab('appointments')">View All</button>
+        </div>
+        <div id="patient-home-appts-list">
+          <!-- Injected via JS -->
+        </div>
+
+        <!-- Medical Prescriptions Card -->
+        <div style="margin-top: 20px;">
+          <h2 style="font-size: 1rem; font-weight: 800; color: #0f172a; margin-bottom: 10px;">Active Prescriptions</h2>
+          <div class="clinic-card" style="padding: 14px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div style="font-weight: 700; font-size: 0.875rem;">Atorvastatin 20mg</div>
+                <div style="font-size: 0.6875rem; color: var(--text-muted);">1 tab at bedtime • Dr. Sarah Ramos</div>
+              </div>
+              <button class="bubble-btn bubble-btn-subtle" style="padding: 4px 10px; font-size: 0.6875rem;" onclick="alert('Refill requested with St. Jude Pharmacy.')">
+                Refill
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================================================================
+         PATIENT TAB 2: EXPLORE (MAP + LIST)
+         ================================================================== -->
+    <section id="patient-tab-explore" class="patient-tab-view" style="padding: 16px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <h1 style="font-size: 1.25rem; font-weight: 800; color: #0f172a;">Explore Specialists</h1>
+        <!-- Map vs List Switcher -->
+        <div class="filter-tabs-container" style="margin-bottom: 0;">
+          <button id="explore-view-list-btn" class="filter-tab-pill active" onclick="setExploreMode('list')">List</button>
+          <button id="explore-view-map-btn" class="filter-tab-pill" onclick="setExploreMode('map')">Map</button>
+        </div>
+      </div>
+
+      <!-- Search Input -->
+      <div style="position: relative; margin-bottom: 12px;">
+        <i data-lucide="search" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--text-muted);"></i>
+        <input type="text" id="patient-explore-search" class="form-input" style="padding-left: 40px; border-radius: 20px;" placeholder="Search doctor, specialty, clinic...">
+      </div>
+
+      <!-- Explore Map View Container -->
+      <div id="explore-map-container" style="display: none; height: 320px; border-radius: 20px; overflow: hidden; margin-bottom: 16px; border: 1px solid var(--border-subtle);">
+        <div id="patient-explore-map" style="width: 100%; height: 100%;"></div>
+      </div>
+
+      <!-- Doctor Cards -->
+      <div id="patient-explore-list" style="display: flex; flex-direction: column; gap: 12px;">
+        <!-- Injected via JS -->
+      </div>
+    </section>
+
+    <!-- ==================================================================
+         PATIENT TAB 3: APPOINTMENTS
+         ================================================================== -->
+    <section id="patient-tab-appointments" class="patient-tab-view" style="padding: 16px;">
+      <h1 style="font-size: 1.25rem; font-weight: 800; color: #0f172a; margin-bottom: 14px;">My Appointments</h1>
+
+      <!-- Filter Tabs -->
+      <div class="filter-tabs-container">
+        <button class="filter-tab-pill active" data-pfilter="upcoming" onclick="filterPatientAppts('upcoming')">Upcoming</button>
+        <button class="filter-tab-pill" data-pfilter="completed" onclick="filterPatientAppts('completed')">Completed</button>
+        <button class="filter-tab-pill" data-pfilter="cancelled" onclick="filterPatientAppts('cancelled')">Cancelled</button>
+      </div>
+
+      <div id="patient-full-appts-list" style="display: flex; flex-direction: column; gap: 12px;">
+        <!-- Injected via JS -->
+      </div>
+    </section>
+
+    <!-- ==================================================================
+         PATIENT TAB 4: MESSAGES (REAL IN-APP MESSAGING)
+         ================================================================== -->
+    <section id="patient-tab-messages" class="patient-tab-view" style="padding: 16px;">
+      <h1 style="font-size: 1.25rem; font-weight: 800; color: #0f172a; margin-bottom: 14px;">Messages</h1>
+
+      <!-- Conversations List -->
+      <div id="patient-convos-list" style="display: flex; flex-direction: column; gap: 10px;">
+        <!-- Injected via JS -->
+      </div>
+
+      <!-- Active Chat Thread View -->
+      <div id="patient-chat-thread-view" style="display: none; margin-top: 10px;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+          <button class="bubble-btn bubble-btn-subtle" style="padding: 4px 10px; font-size: 0.75rem;" onclick="closeChatThread()">
+            <i data-lucide="arrow-left" style="width: 12px; height: 12px;"></i> Back to Inbox
+          </button>
+          <div id="active-chat-title" style="font-weight: 700; font-size: 0.875rem;">Dr. Sarah Ramos</div>
+        </div>
+
+        <div id="chat-thread-messages" style="height: 320px; overflow-y: auto; background: #ffffff; border: 1px solid var(--border-subtle); border-radius: 18px; padding: 14px; margin-bottom: 10px;">
+          <!-- Injected via JS -->
+        </div>
+
+        <div style="display: flex; gap: 8px;">
+          <input type="text" id="patient-msg-input" class="form-input" style="border-radius: 20px;" placeholder="Type secure message..." onkeydown="if(event.key==='Enter') sendPatientMessage()">
+          <button class="bubble-btn bubble-btn-primary" style="padding: 0 16px; border-radius: 20px;" onclick="sendPatientMessage()">
+            <i data-lucide="send" style="width: 14px; height: 14px;"></i>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================================
+         PATIENT TAB 5: PROFILE
+         ================================================================== -->
+    <section id="patient-tab-profile" class="patient-tab-view" style="padding: 16px;">
+      <div style="text-align: center; margin-bottom: 20px;">
+        <div class="avatar-circle" style="width: 64px; height: 64px; font-size: 1.5rem; margin: 0 auto 10px; font-weight: 800;">MM</div>
+        <h1 style="font-size: 1.1875rem; font-weight: 800; color: #0f172a;">Mariane Millera</h1>
+        <div style="font-size: 0.75rem; color: var(--text-muted);">patient@healthcare.com • +1 (555) 019-2834</div>
+      </div>
+
+      <!-- Saved Specialists (Favorites) -->
+      <div style="margin-bottom: 20px;">
+        <h2 style="font-size: 0.9375rem; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Saved Specialists</h2>
+        <div id="patient-saved-doctors-list" style="display: flex; flex-direction: column; gap: 8px;">
+          <!-- Injected via JS -->
+        </div>
+      </div>
+
+      <!-- Account Settings Options -->
+      <div class="clinic-card" style="padding: 6px 14px; margin-bottom: 20px;">
+        <div style="padding: 10px 0; border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; font-size: 0.8125rem;">
+          <span>Emergency Contact</span>
+          <span style="font-weight: 600; color: var(--text-secondary);">Mark Millera (+1 555-0199)</span>
+        </div>
+        <div style="padding: 10px 0; border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; font-size: 0.8125rem;">
+          <span>Insurance Provider</span>
+          <span style="font-weight: 600; color: var(--text-secondary);">Blue Cross Blue Shield</span>
+        </div>
+        <div style="padding: 10px 0; display: flex; justify-content: space-between; align-items: center; font-size: 0.8125rem; cursor: pointer;" onclick="alert('Notification push alerts are active.')">
+          <span>Push Notifications</span>
+          <span style="font-weight: 700; color: #10b981;">Enabled</span>
+        </div>
+      </div>
+
+      <button class="bubble-btn bubble-btn-subtle" style="width: 100%; justify-content: center; color: #ef4444; border-color: #fecaca;" onclick="window.HC_CORE.logout()">
+        <i data-lucide="log-out" style="width: 14px; height: 14px;"></i> Log Out
+      </button>
+    </section>
+
+    <!-- ==================================================================
+         FLOATING iOS BOTTOM DOCK NAVIGATION
+         ================================================================== -->
+    <nav class="mobile-dock-nav" style="display: flex; position: fixed; max-width: 408px; left: 50%; transform: translateX(-50%);">
+      <button class="dock-item active" data-ptab="home" onclick="switchPatientTab('home')">
+        <i data-lucide="home" style="width: 20px; height: 20px;"></i>
+        <span>Home</span>
+      </button>
+      <button class="dock-item" data-ptab="explore" onclick="switchPatientTab('explore')">
+        <i data-lucide="compass" style="width: 20px; height: 20px;"></i>
+        <span>Explore</span>
+      </button>
+      <button class="dock-item" data-ptab="appointments" onclick="switchPatientTab('appointments')">
+        <i data-lucide="calendar" style="width: 20px; height: 20px;"></i>
+        <span>Visits</span>
+      </button>
+      <button class="dock-item" data-ptab="messages" onclick="switchPatientTab('messages')">
+        <i data-lucide="message-square" style="width: 20px; height: 20px;"></i>
+        <span>Messages</span>
+      </button>
+      <button class="dock-item" data-ptab="profile" onclick="switchPatientTab('profile')">
+        <i data-lucide="user" style="width: 20px; height: 20px;"></i>
+        <span>Profile</span>
+      </button>
+    </nav>
+
+  </div>
+
+  <!-- ==================================================================
+       MODALS: PATIENT NOTIFICATIONS TRAY
+       ================================================================== -->
+  <div id="patient-notif-modal" class="modal-overlay">
+    <div class="modal-surface" style="max-width: 380px;">
+      <div class="modal-header">
+        <h3 style="font-size: 1rem; font-weight: 700;">Notifications</h3>
+        <button class="modal-close-btn" onclick="closePatientNotifications()">
+          <i data-lucide="x" style="width: 16px; height: 16px;"></i>
+        </button>
+      </div>
+      <div id="patient-notif-list" style="display: flex; flex-direction: column; gap: 8px;">
+        <!-- Injected via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: APPOINTMENT STATUS & RESCHEDULE -->
+  <div id="patient-reschedule-modal" class="modal-overlay">
+    <div class="modal-surface" style="max-width: 380px;">
+      <div class="modal-header">
+        <h3 style="font-size: 1rem; font-weight: 700;">Reschedule Visit</h3>
+        <button class="modal-close-btn" onclick="closeRescheduleModal()">
+          <i data-lucide="x" style="width: 16px; height: 16px;"></i>
+        </button>
+      </div>
+      <div class="form-field" style="margin-bottom: 12px;">
+        <label class="form-label">New Date</label>
+        <input type="date" id="p-resched-date" class="form-input" value="2026-10-15" min="2026-10-03">
+      </div>
+      <div class="form-field" style="margin-bottom: 18px;">
+        <label class="form-label">New Time Slot</label>
+        <select id="p-resched-time" class="form-select">
+          <option value="09:00 AM">09:00 AM</option>
+          <option value="10:30 AM">10:30 AM</option>
+          <option value="01:15 PM">01:15 PM</option>
+          <option value="03:00 PM">03:00 PM</option>
+        </select>
+      </div>
+      <button class="bubble-btn bubble-btn-primary" style="width: 100%; justify-content: center;" onclick="confirmPatientReschedule()">
+        Confirm Reschedule
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL: REVIEW POST-VISIT EXPERIENCE -->
+  <div id="patient-review-modal" class="modal-overlay">
+    <div class="modal-surface" style="max-width: 380px;">
+      <div class="modal-header">
+        <h3 style="font-size: 1rem; font-weight: 700;">Review Consultation</h3>
+        <button class="modal-close-btn" onclick="closeReviewModal()">
+          <i data-lucide="x" style="width: 16px; height: 16px;"></i>
+        </button>
+      </div>
+      <div class="form-field" style="margin-bottom: 12px;">
+        <label class="form-label">Physician Rating</label>
+        <select id="review-stars-select" class="form-select">
+          <option value="5">★★★★★ (5 Stars - Excellent)</option>
+          <option value="4">★★★★☆ (4 Stars - Very Good)</option>
+          <option value="3">★★★☆☆ (3 Stars - Average)</option>
+        </select>
+      </div>
+      <div class="form-field" style="margin-bottom: 16px;">
+        <label class="form-label">Your Feedback</label>
+        <textarea id="review-comment-text" class="form-textarea" rows="3" placeholder="Share your experience with the physician and facility..."></textarea>
+      </div>
+      <button class="bubble-btn bubble-btn-primary" style="width: 100%; justify-content: center;" onclick="submitPatientReview()">
+        Submit Review
+      </button>
+    </div>
+  </div>
+
+  <script src="assets/js/core-data.js"></script>
+  <script src="assets/js/patient-app.js"></script>
+</body>
+</html>
