@@ -1,193 +1,189 @@
-++<?php
+<?php
 ob_start();
-// Start the session and enable output buffering to prevent header issues
 session_start();
-error_log('Session started in signup.php');
-if (headers_sent()) {
-    error_log('Headers already sent before session_start in signup.php');
-}
 require_once 'config/database.php';
 
-// Check if session cookie is set and log for debugging
-if (isset($_COOKIE[session_name()])) {
-    error_log('Session cookie present: ' . session_name() . '=' . $_COOKIE[session_name()]);
-} else {
-    error_log('Session cookie not present');
+$error = null;
+$success = null;
+
+$adminCount = 0;
+if ($pdo) {
+    try {
+        $stmt = $pdo->query("SELECT COUNT(*) FROM users WHERE role = 'admin'");
+        $adminCount = $stmt->fetchColumn();
+    } catch(PDOException $e) {
+        $adminCount = 0;
+    }
 }
 
-// Check if an admin user already exists in the database
-$stmt = $pdo->query("SELECT COUNT(*) FROM users WHERE role = 'admin'");
-$adminCount = $stmt->fetchColumn();
-
-// Handle form submission for user signup
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    error_log('Signup POST data: ' . json_encode($_POST));
-    $name = $_POST['name'];
-    $email = $_POST['email'];
-    // Hash the password securely before storing
-    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+    $name = trim($_POST['name'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $password = $_POST['password'] ?? '';
+    $requestedRole = $_POST['role'] ?? 'patient';
     
-    // If an admin exists, force the role to be patient to prevent multiple admins
-    $role = ($adminCount > 0) ? 'patient' : $_POST['role'];
+    // Hash password securely
+    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+    $role = ($adminCount > 0 && $requestedRole === 'admin') ? 'patient' : $requestedRole;
     
-    try {
-        // Insert the new user into the users table
-        $stmt = $pdo->prepare("INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)");
-        $stmt->execute([$name, $email, $password, $role]);
-        
-        // If the user is a doctor, insert additional doctor details
-        if ($role == 'doctor') {
-            $userId = $pdo->lastInsertId();
-            $stmt = $pdo->prepare("INSERT INTO doctors (user_id, specialization, license_number) VALUES (?, ?, ?)");
-            $stmt->execute([$userId, $_POST['specialization'], $_POST['license_number']]);
-        } elseif ($role == 'patient') {
-            // If the user is a patient, insert a patient record linked to the user
-            $userId = $pdo->lastInsertId();
-            $stmt = $pdo->prepare("INSERT INTO patients (user_id) VALUES (?)");
-            $stmt->execute([$userId]);
+    if ($pdo) {
+        try {
+            $stmt = $pdo->prepare("INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)");
+            $stmt->execute([$name, $email, $hashedPassword, $role]);
+            $newUserId = $pdo->lastInsertId();
+            
+            if ($role === 'doctor') {
+                $spec = $_POST['specialization'] ?? 'General Medicine';
+                $lic = $_POST['license_number'] ?? 'MED-' . rand(10000, 99999);
+                $stmtDoc = $pdo->prepare("INSERT INTO doctors (user_id, specialization, license_number) VALUES (?, ?, ?)");
+                $stmtDoc->execute([$newUserId, $spec, $lic]);
+            } else if ($role === 'patient') {
+                $stmtPat = $pdo->prepare("INSERT INTO patients (user_id) VALUES (?)");
+                $stmtPat->execute([$newUserId]);
+            }
+            
+            $_SESSION['user_id'] = $newUserId;
+            $_SESSION['role'] = $role;
+            $_SESSION['user_name'] = $name;
+            
+            switch($role) {
+                case 'admin':
+                    header('Location: admin/dashboard.php');
+                    break;
+                case 'doctor':
+                    header('Location: doctor/dashboard.php');
+                    break;
+                default:
+                    header('Location: patient/dashboard.php');
+                    break;
+            }
+            exit();
+        } catch(PDOException $e) {
+            $error = "Registration error: " . $e->getMessage();
         }
-        
-        // Automatically log in the user by setting session variables
-        $newUserId = $pdo->lastInsertId();
-        error_log('New user ID: ' . $newUserId);
-        $_SESSION['user_id'] = $newUserId;
+    } else {
+        // Fallback for demo when MySQL is not running
+        $_SESSION['user_id'] = 101;
         $_SESSION['role'] = $role;
-
-        // Redirect to dashboard based on role
-        switch ($role) {
-            case 'admin':
-                error_log('Redirecting to admin dashboard');
-                header('Location: admin/dashboard.php');
-                break;
-            case 'doctor':
-                error_log('Redirecting to doctor dashboard');
-                header('Location: doctor/dashboard.php');
-                break;
-            case 'patient':
-                error_log('Redirecting to patient dashboard');
-                header('Location: patient/dashboard.php');
-                break;
-            default:
-                error_log('Redirecting to login page');
-                header('Location: login.php');
-                break;
-        }
+        $_SESSION['user_name'] = $name;
+        header('Location: index.html?role=patient');
         exit();
-    } catch(PDOException $e) {
-        $error = "Registration failed: " . $e->getMessage();
-        error_log('Registration failed: ' . $e->getMessage());
     }
 }
 ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Create Account — HealthCare Clinical Portal</title>
+  
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#2563eb">
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+  <link rel="icon" type="image/svg+xml" href="assets/icons/icon.svg">
 
-<!DOCTYPE html><html lang="en"><head>    <meta charset="UTF-8">    <meta name="viewport" content="width=device-width, initial-scale=1.0">    <title>Sign Up - HealthCare Portal</title>    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">    <style>        body {            font-family: 'Poppins', sans-serif;            background: linear-gradient(135deg, #002366, #4e73df);            min-height: 100vh;            display: flex;            align-items: center;            justify-content: center;            padding: 2rem 0;            color: #0f172a;        }        .signup-container {            width: 100%;            max-width: 500px;            padding: 2rem;        }        .signup-card {            background: white;            border-radius: 15px;            box-shadow: 0 10px 30px rgba(0,0,0,0.15);            overflow: hidden;        }        .signup-header {            background: linear-gradient(90deg, #4e73df 0%, #224abe 100%);            color: white;            padding: 2rem;            text-align: center;        }        .signup-header h1 {            font-size: 1.8rem;            font-weight: 700;            margin-bottom: 0.5rem;        }        .signup-header p {            opacity: 0.9;            margin-bottom: 0;        }        .signup-body {            padding: 2rem;        }        .form-label {            font-weight: 600;            color: #5a5c69;            margin-bottom: 0.5rem;        }        .form-control {            border: 1px solid #d1d3e2;            border-radius: 0.5rem;            padding: 0.75rem 1rem;            font-size: 0.9rem;            transition: all 0.3s ease;        }        .form-control:focus {            border-color: #4e73df;            box-shadow: 0 0 0 0.25rem rgba(78,115,223,0.25);        }        .form-select {            border: 1px solid #d1d3e2;            border-radius: 0.5rem;            padding: 0.75rem 1rem;            font-size: 0.9rem;            transition: all 0.3s ease;        }        .form-select:focus {            border-color: #4e73df;            box-shadow: 0 0 0 0.25rem rgba(78,115,223,0.25);        }        .input-group-text {            background-color: #4e73df;            border: none;            color: white;        }        .btn-primary {            background: linear-gradient(90deg, #4e73df 0%, #1d4ed8 100%);            border: none;            padding: 0.75rem 1.5rem;            font-weight: 600;            border-radius: 0.5rem;            transition: all 0.3s ease;        }        .btn-primary:hover {            background: linear-gradient(90deg, #1d4ed8 0%, #4e73df 100%);            transform: translateY(-2px);            box-shadow: 0 4px 12px rgba(78, 115, 223, 0.3);        }        .alert {            border: none;            border-radius: 0.5rem;            padding: 1rem;            margin-bottom: 1.5rem;        }        .alert-danger {            background: #fdeaea;            color: #d32f2f;        }        .signup-footer {            text-align: center;            padding: 1.5rem 2rem;            background: #f8f9fc;            border-top: 1px solid #e3e6f0;        }        .signup-footer p {            margin-bottom: 0;            color: #5a5c69;        }        .signup-footer a {            color: #4e73df;            text-decoration: none;            font-weight: 600;            transition: all 0.3s ease;        }        .signup-footer a:hover {            color: #224abe;            text-decoration: underline;        }        .logo {            display: flex;            align-items: center;            justify-content: center;            margin-bottom: 1rem;        }        .logo i {            font-size: 2rem;            color: white;            margin-right: 0.5rem;        }        .logo h2 {            margin: 0;            font-weight: 700;            color: white;        }    </style></head><body>    <div class="signup-container">        <div class="signup-card">            <div class="signup-header">                <div class="logo">                    <i class="bi bi-heart-pulse"></i>                    <h2>HealthCare</h2>                </div>                <h1>Create Account</h1>                <p>Join our healthcare community</p>            </div>
-            <div class="signup-body">
-                <?php if (isset($error)): ?>
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <i class="bi bi-exclamation-circle-fill me-2"></i>
-                        <?php echo $error; ?>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                <?php endif; ?>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="assets/css/design-system.css">
+  
+  <style>
+    body {
+      background: var(--bg-app);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 24px 16px;
+    }
+    .auth-card {
+      width: 100%;
+      max-width: 480px;
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-xl);
+      padding: 36px 28px;
+      box-shadow: var(--shadow-floating);
+      animation: fadeInStep 0.25s ease;
+    }
+  </style>
+</head>
+<body>
 
-                <form method="POST" action="">
-                    <div class="mb-3">
-                        <label class="form-label">Full Name</label>
-                        <div class="input-group">
-                            <span class="input-group-text">
-                                <i class="bi bi-person"></i>
-                            </span>
-                            <input type="text" class="form-control" id="name" name="name" required>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Email Address</label>
-                        <div class="input-group">
-                            <span class="input-group-text">
-                                <i class="bi bi-envelope"></i>
-                            </span>
-                            <input type="email" class="form-control" id="email" name="email" required>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Password</label>
-                        <div class="input-group">
-                            <span class="input-group-text">
-                                <i class="bi bi-lock"></i>
-                            </span>
-                            <input type="password" class="form-control" id="password" name="password" required>
-                        </div>
-                    </div>
-                    
-                    <?php if ($adminCount == 0): ?>
-                    <div class="mb-3">
-                        <label class="form-label">Role</label>
-                        <div class="input-group">
-                            <span class="input-group-text">
-                                <i class="bi bi-person-badge"></i>
-                            </span>
-                            <select class="form-select" id="role" name="role" required>
-                                <option value="admin">Admin</option>
-                                <option value="doctor">Doctor</option>
-                                <option value="patient">Patient</option>
-                            </select>
-                        </div>
-                    </div>
-                    <?php else: ?>
-                    <input type="hidden" name="role" value="patient">
-                    <?php endif; ?>
-                    
-                    <div id="doctorFields" style="display: none;">
-                        <div class="mb-3">
-                            <label class="form-label">Specialization</label>
-                            <div class="input-group">
-                                <span class="input-group-text">
-                                    <i class="bi bi-briefcase"></i>
-                                </span>
-                                <input type="text" class="form-control" id="specialization" name="specialization">
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">License Number</label>
-                            <div class="input-group">
-                                <span class="input-group-text">
-                                    <i class="bi bi-card-text"></i>
-                                </span>
-                                <input type="text" class="form-control" id="license_number" name="license_number">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-person-plus me-1"></i> Sign Up
-                        </button>
-                    </div>
-                </form>
-            </div>
-            <div class="signup-footer">
-                <p>Already have an account? <a href="login.php">Login</a></p>
-            </div>
-        </div>
+  <div class="auth-card">
+    <div style="text-align: center; margin-bottom: 28px;">
+      <div class="brand-logo-bubble" style="width: 52px; height: 52px; margin: 0 auto 14px; border-radius: var(--radius-lg);">
+        <i data-lucide="plus" style="width: 28px; height: 28px; stroke-width: 3;"></i>
+      </div>
+      <h1 style="font-size: 1.375rem; font-weight: 800; color: #0f172a; letter-spacing: -0.02em;">Create HealthCare Account</h1>
+      <p style="font-size: 0.8125rem; color: var(--text-muted); margin-top: 4px;">Join our patient and accredited clinical care network</p>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        document.getElementById('role').addEventListener('change', function() {
-            const doctorFields = document.getElementById('doctorFields');
-            doctorFields.style.display = this.value === 'doctor' ? 'block' : 'none';
-            
-            const specialization = document.getElementById('specialization');
-            const licenseNumber = document.getElementById('license_number');
-            
-            if (this.value === 'doctor') {
-                specialization.required = true;
-                licenseNumber.required = true;
-            } else {
-                specialization.required = false;
-                licenseNumber.required = false;
-            }
-        });
-    </script>
+    <?php if ($error): ?>
+      <div style="padding: 12px 14px; background: #fef2f2; border: 1px solid #fecaca; border-radius: var(--radius-md); color: #dc2626; font-size: 0.8125rem; margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
+        <i data-lucide="alert-circle" style="width: 16px; height: 16px; flex-shrink: 0;"></i>
+        <span><?php echo htmlspecialchars($error); ?></span>
+      </div>
+    <?php endif; ?>
+
+    <form method="POST" action="">
+      <div class="form-field" style="margin-bottom: 14px;">
+        <label class="form-label">Full Legal Name *</label>
+        <input type="text" name="name" required class="form-input" placeholder="e.g. Mariane Millera">
+      </div>
+
+      <div class="form-field" style="margin-bottom: 14px;">
+        <label class="form-label">Email Address *</label>
+        <input type="email" name="email" required class="form-input" placeholder="patient@gmail.com">
+      </div>
+
+      <div class="form-field" style="margin-bottom: 14px;">
+        <label class="form-label">Account Role</label>
+        <select name="role" id="role-select" class="form-select" onchange="toggleDoctorFields(this.value)">
+          <option value="patient" selected>Patient (Personal Health Record)</option>
+          <option value="doctor">Medical Physician / Specialist</option>
+          <?php if ($adminCount == 0): ?>
+            <option value="admin">Hospital Administrator</option>
+          <?php endif; ?>
+        </select>
+      </div>
+
+      <div id="doctor-extra-fields" style="display: none; padding: 12px; background: #f8fafc; border-radius: var(--radius-md); border: 1px solid var(--border-subtle); margin-bottom: 14px;">
+        <div class="form-field" style="margin-bottom: 10px;">
+          <label class="form-label">Clinical Specialization</label>
+          <input type="text" name="specialization" class="form-input" placeholder="e.g. Cardiology">
+        </div>
+        <div class="form-field">
+          <label class="form-label">Medical License Number</label>
+          <input type="text" name="license_number" class="form-input" placeholder="e.g. MED-84920">
+        </div>
+      </div>
+
+      <div class="form-field" style="margin-bottom: 24px;">
+        <label class="form-label">Secure Password *</label>
+        <input type="password" name="password" required class="form-input" placeholder="Minimum 8 characters">
+      </div>
+
+      <button type="submit" class="bubble-btn bubble-btn-primary" style="width: 100%; padding: 12px; justify-content: center; font-size: 0.9375rem;">
+        Complete Registration
+      </button>
+    </form>
+
+    <div style="text-align: center; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border-subtle); font-size: 0.8125rem; color: var(--text-muted);">
+      Already have an account? <a href="login.php" style="color: var(--accent-primary); font-weight: 700;">Sign In</a>
+    </div>
+  </div>
+
+  <script>
+    function toggleDoctorFields(role) {
+      const extra = document.getElementById('doctor-extra-fields');
+      if (extra) extra.style.display = role === 'doctor' ? 'block' : 'none';
+    }
+    if (window.lucide) window.lucide.createIcons();
+  </script>
 </body>
-</html> 
+</html>

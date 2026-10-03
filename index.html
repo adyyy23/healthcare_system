@@ -3,9 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HealthCare System — Clinical Portal & Appointment Management</title>
-  <meta name="description" content="Professional healthcare booking, patient medical management, doctor schedules, and clinical staff dashboard.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>HealthCare Portal — Clinical & Patient Care Platform</title>
+  <meta name="description" content="Modern iOS-inspired healthcare portal for specialist discovery, clinic finder, guided appointment booking, and clinical operations.">
+
+  <!-- PWA & Mobile Web App Manifest -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#2563eb">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="HealthCare">
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+  <link rel="icon" type="image/svg+xml" href="assets/icons/icon.svg">
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png">
 
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -15,1060 +25,903 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
+  <!-- Leaflet Map CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+  <!-- Modern Design System Stylesheet -->
+  <link rel="stylesheet" href="assets/css/design-system.css">
+
   <style>
-    /* ==========================================================================
-       HEALTHCARE SYSTEM - CLINICAL DESIGN SYSTEM
-       Strict solid surfaces, high visual contrast, zero gradients, zero emojis
-       ========================================================================== */
-    :root {
-      --bg-app: #f8fafc;
-      --bg-surface: #ffffff;
-      --bg-subtle: #f1f5f9;
-      --bg-muted: #e2e8f0;
-      --bg-nav: #0f172a;
-      --bg-nav-hover: #1e293b;
-
-      --text-primary: #0f172a;
-      --text-secondary: #475569;
-      --text-muted: #64748b;
-      --text-inverse: #ffffff;
-
-      --teal-primary: #0d9488;
-      --teal-hover: #0f766e;
-      --teal-light: #f0fdfa;
-      --teal-border: #99f6e4;
-
-      --blue-primary: #2563eb;
-      --blue-light: #eff6ff;
-      --blue-border: #bfdbfe;
-
-      --amber-warning: #d97706;
-      --amber-light: #fffbeb;
-      --amber-border: #fde68a;
-
-      --rose-danger: #dc2626;
-      --rose-light: #fef2f2;
-      --rose-border: #fecaca;
-
-      --border-color: #e2e8f0;
-      --border-subtle: #f8fafc;
-
-      --radius-sm: 6px;
-      --radius-md: 10px;
-      --radius-lg: 14px;
-      --radius-full: 9999px;
-
-      --shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
-      --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.07);
-      --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.1);
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      *, ::before, ::after {
-        animation-duration: 0.001ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.001ms !important;
-      }
-    }
-
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
-      background-color: var(--bg-app);
-      color: var(--text-primary);
-      line-height: 1.5;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    button {
-      font-family: inherit;
-      cursor: pointer;
-      border: none;
-      background: none;
-    }
-
-    input, select, textarea {
-      font-family: inherit;
-      font-size: 0.9375rem;
-    }
-
-    /* Navigation Bar */
-    .clinical-navbar {
-      background-color: var(--bg-nav);
-      color: var(--text-inverse);
-      height: 70px;
-      padding: 0 32px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    }
-
-    .brand-wrap {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .brand-cross-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: var(--radius-md);
-      background-color: var(--teal-primary);
-      color: #ffffff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .brand-title {
-      font-size: 1.125rem;
-      font-weight: 700;
-      letter-spacing: -0.01em;
-    }
-
-    .brand-badge {
-      font-size: 0.6875rem;
-      color: #94a3b8;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-
-    /* Role Switcher in Header */
-    .role-switcher-group {
-      display: flex;
-      align-items: center;
-      background-color: rgba(255, 255, 255, 0.08);
-      padding: 3px;
-      border-radius: var(--radius-md);
-      gap: 4px;
-    }
-
-    .role-btn {
-      padding: 6px 14px;
-      border-radius: var(--radius-sm);
-      font-size: 0.8125rem;
-      font-weight: 600;
-      color: #94a3b8;
-      transition: all 0.15s ease;
-    }
-
-    .role-btn:hover {
-      color: #ffffff;
-    }
-
-    .role-btn.active {
-      background-color: var(--teal-primary);
-      color: #ffffff;
-    }
-
-    /* Button System */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 9px 18px;
-      border-radius: var(--radius-md);
-      font-size: 0.875rem;
-      font-weight: 600;
-      transition: all 0.15s ease;
-      white-space: nowrap;
-    }
-
-    .btn-teal {
-      background-color: var(--teal-primary);
-      color: #ffffff;
-    }
-
-    .btn-teal:hover {
-      background-color: var(--teal-hover);
-    }
-
-    .btn-secondary {
-      background-color: var(--bg-surface);
-      color: var(--text-primary);
-      border: 1px solid var(--border-color);
-    }
-
-    .btn-secondary:hover {
-      background-color: var(--bg-subtle);
-    }
-
-    .btn-sm {
-      padding: 6px 12px;
-      font-size: 0.8125rem;
-    }
-
-    /* Main Container */
-    .portal-main {
-      flex: 1;
-      max-width: 1320px;
-      width: 100%;
-      margin: 0 auto;
-      padding: 32px 24px 64px;
-    }
-
-    .role-view {
+    /* View Transitions & Spatial Map Overlays */
+    .role-view-container {
       display: none;
     }
-
-    .role-view.active {
+    .role-view-container.active {
       display: block;
-      animation: fadeIn 0.2s ease forwards;
+      animation: fadeInRole 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
-
-    @keyframes fadeIn {
+    @keyframes fadeInRole {
       from { opacity: 0; transform: translateY(6px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Stats Grid */
-    .stats-row {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 16px;
-      margin-bottom: 28px;
+    /* Custom Leaflet Pin Styling */
+    .custom-map-pin-wrap {
+      background: none !important;
+      border: none !important;
     }
-
-    .stat-box {
-      background-color: var(--bg-surface);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-lg);
-      padding: 20px;
-      box-shadow: var(--shadow-sm);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .stat-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-
-    .stat-label {
-      font-size: 0.75rem;
-      font-weight: 700;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-
-    .stat-val {
-      font-size: 1.875rem;
-      font-weight: 800;
-      color: var(--text-primary);
-      line-height: 1.1;
-    }
-
-    /* Card Panels */
-    .card-panel {
-      background-color: var(--bg-surface);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-lg);
-      padding: 24px;
-      box-shadow: var(--shadow-sm);
-      margin-bottom: 24px;
-    }
-
-    .card-header-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 18px;
-      border-bottom: 1px solid var(--border-color);
-      padding-bottom: 14px;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    .card-heading {
-      font-size: 1.125rem;
-      font-weight: 700;
-      color: var(--text-primary);
-    }
-
-    /* Doctor Card Grid */
-    .doctors-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 20px;
-    }
-
-    .doctor-profile-card {
-      background-color: var(--bg-surface);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      overflow: hidden;
-      box-shadow: var(--shadow-sm);
-      transition: all 0.15s ease;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .doctor-profile-card:hover {
-      border-color: var(--teal-primary);
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-md);
-    }
-
-    .doctor-img-wrap {
-      width: 100%;
-      height: 200px;
-      overflow: hidden;
-      background-color: var(--bg-subtle);
-    }
-
-    .doctor-img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .doctor-card-body {
-      padding: 16px;
-    }
-
-    .doctor-name {
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--text-primary);
-    }
-
-    .doctor-spec {
-      font-size: 0.8125rem;
-      font-weight: 600;
-      color: var(--teal-primary);
-      margin-bottom: 8px;
-    }
-
-    .doctor-meta-line {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      margin-bottom: 4px;
-    }
-
-    /* Badges */
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 2px 8px;
-      border-radius: var(--radius-sm);
-      font-size: 0.6875rem;
-      font-weight: 700;
-      text-transform: uppercase;
-    }
-
-    .badge-approved, .badge-completed {
-      background-color: var(--teal-light);
-      color: var(--teal-primary);
-      border: 1px solid var(--teal-border);
-    }
-
-    .badge-pending {
-      background-color: var(--amber-light);
-      color: var(--amber-warning);
-      border: 1px solid var(--amber-border);
-    }
-
-    .badge-cancelled {
-      background-color: var(--rose-light);
-      color: var(--rose-danger);
-      border: 1px solid var(--rose-border);
-    }
-
-    /* Tables */
-    .table-container {
-      width: 100%;
-      overflow-x: auto;
-    }
-
-    .clinical-table {
-      width: 100%;
-      border-collapse: collapse;
-      text-align: left;
-    }
-
-    .clinical-table th {
-      padding: 12px 18px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      background-color: var(--bg-subtle);
-      border-bottom: 1px solid var(--border-color);
-    }
-
-    .clinical-table td {
-      padding: 14px 18px;
-      font-size: 0.875rem;
-      border-bottom: 1px solid var(--border-color);
-      color: var(--text-primary);
-      vertical-align: middle;
-    }
-
-    .clinical-table tr:hover td {
-      background-color: var(--bg-subtle);
-    }
-
-    /* Forms */
-    .form-row {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 16px;
-      margin-bottom: 16px;
-    }
-
-    .form-group label {
-      display: block;
-      font-size: 0.8125rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      margin-bottom: 6px;
-    }
-
-    .form-control {
-      width: 100%;
-      padding: 9px 12px;
-      border-radius: var(--radius-md);
-      border: 1px solid var(--border-color);
-      background-color: var(--bg-surface);
-      color: var(--text-primary);
-      outline: none;
-    }
-
-    .form-control:focus {
-      border-color: var(--teal-primary);
-      box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.15);
-    }
-
-    /* Modal */
-    .modal-backdrop {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: rgba(15, 23, 42, 0.5);
+    .custom-clinic-pin {
+      position: relative;
+      cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      z-index: 1000;
-      padding: 20px;
+    }
+    .pin-beacon {
+      position: absolute;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(37, 99, 235, 0.25);
+      animation: pulseBeacon 2s infinite ease-out;
+    }
+    @keyframes pulseBeacon {
+      0% { transform: scale(0.6); opacity: 1; }
+      100% { transform: scale(1.6); opacity: 0; }
+    }
+    .pin-core {
+      position: relative;
+      z-index: 2;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #2563eb;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.4);
+      border: 2px solid #ffffff;
     }
 
-    .modal-window {
-      background-color: var(--bg-surface);
+    /* Filter Chips */
+    .filter-chips-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 4px 0 14px;
+      -webkit-overflow-scrolling: touch;
+    }
+    .spec-filter-chip {
+      padding: 7px 16px;
+      border-radius: var(--radius-full);
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      transition: all 0.15s ease;
+      cursor: pointer;
+    }
+    .spec-filter-chip:hover {
+      border-color: var(--border-strong);
+      color: var(--text-primary);
+    }
+    .spec-filter-chip.active {
+      background: var(--accent-primary);
+      color: #ffffff;
+      border-color: var(--accent-primary);
+      box-shadow: 0 3px 10px rgba(37, 99, 235, 0.25);
+    }
+
+    /* Filter Tabs for Appointments */
+    .filter-tabs-container {
+      display: flex;
+      gap: 6px;
+      background: var(--bg-card-subtle);
+      padding: 4px;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--border-subtle);
+      margin-bottom: 20px;
+      width: fit-content;
+    }
+    .filter-tab-pill {
+      padding: 6px 16px;
+      border-radius: var(--radius-full);
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .filter-tab-pill.active {
+      background: #ffffff;
+      color: var(--accent-primary);
+      font-weight: 700;
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Quick Action Pill Bar */
+    .quick-actions-bar {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding: 4px 0 20px;
+    }
+    .quick-action-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
       border-radius: var(--radius-lg);
-      border: 1px solid var(--border-color);
-      box-shadow: var(--shadow-lg);
-      width: 100%;
-      max-width: 520px;
-      max-height: 90vh;
-      overflow-y: auto;
-      padding: 28px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      font-size: 0.8125rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      box-shadow: var(--shadow-xs);
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .quick-action-item:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-sm);
+      border-color: #bfdbfe;
     }
 
-    /* Responsive */
-    @media screen and (max-width: 768px) {
-      .clinical-navbar {
-        padding: 0 16px;
-        flex-direction: column;
-        height: auto;
-        padding-bottom: 12px;
-        gap: 12px;
-      }
-      .portal-main {
-        padding: 20px 16px 40px;
-      }
-      .role-switcher-group {
-        width: 100%;
-        justify-content: center;
-      }
+    /* Doctor View Timeline */
+    .schedule-timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .timeline-slot-card {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 14px 18px;
+    }
+    .slot-time-col {
+      min-width: 80px;
+      font-size: 0.875rem;
+      font-weight: 800;
+      color: var(--accent-primary);
+    }
+    .slot-info-col {
+      flex: 1;
     }
   </style>
 </head>
 <body>
 
-  <!-- Clinical Top Navbar -->
-  <header class="clinical-navbar">
-    <div class="brand-wrap">
-      <div class="brand-cross-icon">
-        <i data-lucide="plus-circle" style="width: 24px; height: 24px;"></i>
-      </div>
-      <div>
-        <div class="brand-title">Healthcare System</div>
-        <div class="brand-badge">Clinical & Patient Portal</div>
-      </div>
-    </div>
+  <!-- PWA Offline Notice Banner -->
+  <div id="offline-indicator-banner" class="offline-banner">
+    <i data-lucide="wifi-off" style="width: 14px; height: 14px; vertical-align: middle; margin-right: 6px;"></i>
+    Offline Mode: Browsing cached clinical records and doctors. Reconnect to confirm new bookings.
+  </div>
 
-    <!-- Active Interface / Role Switcher -->
-    <div class="role-switcher-group">
-      <button class="role-btn active" data-target="public">Public Clinic</button>
-      <button class="role-btn" data-target="patient">Patient View</button>
-      <button class="role-btn" data-target="doctor">Doctor View</button>
-      <button class="role-btn" data-target="admin">Admin System</button>
+  <!-- ====================================================================
+       FLOATING TOP HEADER (Desktop & Tablet)
+       ==================================================================== -->
+  <header class="app-header">
+    <a href="javascript:void(0)" onclick="switchRole('public')" class="brand-section">
+      <div class="brand-logo-bubble">
+        <i data-lucide="plus" style="width: 22px; height: 22px; stroke-width: 3;"></i>
+      </div>
+      <div class="brand-info">
+        <span class="brand-title">HealthCare System</span>
+        <span class="brand-tagline">Clinical & Patient Portal</span>
+      </div>
+    </a>
+
+    <!-- Desktop Role Switcher Pills -->
+    <nav class="role-nav-pill" aria-label="Role Navigation">
+      <button class="nav-role-btn active" data-role="public" onclick="switchRole('public')">
+        <i data-lucide="compass" style="width: 15px; height: 15px;"></i> Public Clinic
+      </button>
+      <button class="nav-role-btn" data-role="patient" onclick="switchRole('patient')">
+        <i data-lucide="user" style="width: 15px; height: 15px;"></i> Patient View
+      </button>
+      <button class="nav-role-btn" data-role="doctor" onclick="switchRole('doctor')">
+        <i data-lucide="stethoscope" style="width: 15px; height: 15px;"></i> Doctor View
+      </button>
+      <button class="nav-role-btn" data-role="admin" onclick="switchRole('admin')">
+        <i data-lucide="shield" style="width: 15px; height: 15px;"></i> Admin System
+      </button>
+    </nav>
+
+    <!-- Header Actions Right -->
+    <div class="header-actions">
+      <!-- PWA Install Button (shows if installable) -->
+      <button id="pwa-install-btn" class="bubble-btn bubble-btn-primary" style="display: none; padding: 7px 14px; font-size: 0.8125rem;">
+        <i data-lucide="download" style="width: 14px; height: 14px;"></i> Install App
+      </button>
+
+      <!-- Location Selector -->
+      <button class="header-icon-btn" title="Location & Clinics" onclick="requestUserLocation()" style="width: auto; padding: 0 12px; gap: 6px;">
+        <i data-lucide="map-pin" style="width: 15px; height: 15px; color: var(--accent-primary);"></i>
+        <span id="location-display-text" style="font-size: 0.8125rem; font-weight: 600;">Manhattan, NY</span>
+      </button>
+
+      <!-- Notifications Bell -->
+      <button class="header-icon-btn" title="Notification Center" onclick="toggleNotificationsTray()">
+        <i data-lucide="bell" style="width: 18px; height: 18px;"></i>
+        <span id="notif-badge-count" class="badge-dot" style="display: none;"></span>
+      </button>
+
+      <!-- User Profile Bubble -->
+      <div class="user-profile-chip" onclick="switchRole('patient')" title="View Patient Profile">
+        <div class="avatar-circle">MM</div>
+        <span style="font-size: 0.8125rem; font-weight: 700; color: var(--text-primary); display: none; @media(min-width: 600px){display:inline;}">Mariane M.</span>
+      </div>
     </div>
   </header>
 
-  <main class="portal-main">
+  <!-- ====================================================================
+       VIEW 1: PUBLIC CLINIC (DISCOVERY-FIRST EXPERIENCE)
+       ==================================================================== -->
+  <main id="role-view-public" class="role-view-container active">
+    <div class="portal-container">
 
-    <!-- ====================================================================
-         INTERFACE 1: PUBLIC PORTAL & APPOINTMENT BOOKING
-         ==================================================================== -->
-    <section id="view-public" class="role-view active">
-      <!-- Consultation Booking Form Card -->
-      <div class="card-panel">
-        <div class="card-header-row">
-          <div>
-            <h2 class="card-heading">Schedule a Medical Consultation</h2>
-            <p style="font-size: 0.8125rem; color: var(--text-muted); margin-top: 2px;">
-              Book an in-person or telehealth appointment with accredited specialists.
-            </p>
-          </div>
-          <span class="badge badge-approved">Online Booking Open</span>
+      <!-- Spatial Interactive Map Experience -->
+      <div class="spatial-map-container">
+        <!-- Floating Location Chip on Map -->
+        <div class="map-location-tag">
+          <i data-lucide="navigation-2" style="width: 14px; height: 14px; color: #2563eb;"></i>
+          <span>Nearby Healthcare Facilities (4 Accredited)</span>
         </div>
 
-        <form id="public-booking-form">
-          <div class="form-row">
-            <div class="form-group">
-              <label>Patient Full Name *</label>
-              <input type="text" id="book-name" required class="form-control" placeholder="e.g. Mariane Millera">
-            </div>
-            <div class="form-group">
-              <label>Email Address *</label>
-              <input type="email" id="book-email" required class="form-control" placeholder="patient@healthcare.com">
-            </div>
-            <div class="form-group">
-              <label>Phone Number *</label>
-              <input type="tel" id="book-phone" required class="form-control" placeholder="+1 (555) 019-2834">
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label>Clinical Service *</label>
-              <select id="book-service" class="form-control" required>
-                <option value="General Medicine">General Medicine & Preventive Care</option>
-                <option value="Cardiology">Cardiology Consultation</option>
-                <option value="Dermatology">Dermatology & Skin Care</option>
-                <option value="Pediatrics">Pediatrics Health Check</option>
-                <option value="Orthopedics">Orthopedics & Joint Clinic</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label>Select Doctor *</label>
-              <select id="book-doctor" class="form-control" required>
-                <option value="Dr. Sarah Ramos, MD">Dr. Sarah Ramos, MD (Cardiologist)</option>
-                <option value="Dr. Julian Santos, MD">Dr. Julian Santos, MD (General Physician)</option>
-                <option value="Dr. Elena Vance, MD">Dr. Elena Vance, MD (Dermatologist)</option>
-                <option value="Dr. Arthur Davies, MD">Dr. Arthur Davies, MD (Pediatrician)</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label>Preferred Date *</label>
-              <input type="date" id="book-date" required class="form-control" value="2026-09-30">
-            </div>
-          </div>
-
-          <div class="form-group" style="margin-bottom: 20px;">
-            <label>Symptoms / Reason for Visit *</label>
-            <textarea id="book-reason" required class="form-control" rows="3" placeholder="Describe symptoms, duration, current medications, or consultation goals..."></textarea>
-          </div>
-
-          <div style="display: flex; justify-content: flex-end;">
-            <button type="submit" class="btn btn-teal">
-              <i data-lucide="calendar-check" style="width: 16px; height: 16px;"></i>
-              Confirm Appointment Booking
-            </button>
-          </div>
-        </form>
-      </div>
-
-      <!-- Featured Accredited Doctors -->
-      <div class="card-panel">
-        <div class="card-header-row">
-          <div>
-            <h2 class="card-heading">Accredited Medical Specialists</h2>
-            <p style="font-size: 0.8125rem; color: var(--text-muted); margin-top: 2px;">
-              Certified physicians available for clinical consultations and surgery follow-ups.
-            </p>
-          </div>
-        </div>
-
-        <div class="doctors-grid">
-          <div class="doctor-profile-card">
-            <div class="doctor-img-wrap">
-              <img src="images/doctor 1.jpg" alt="Dr. Sarah Ramos" class="doctor-img" onerror="this.src='https://ui-avatars.com/api/?name=Dr+Sarah+Ramos&background=0d9488&color=fff'">
-            </div>
-            <div class="doctor-card-body">
-              <div class="doctor-name">Dr. Sarah Ramos, MD</div>
-              <div class="doctor-spec">Cardiology & Internal Medicine</div>
-              <div class="doctor-meta-line"><i data-lucide="shield-check" style="width: 13px; height: 13px;"></i> License: MED-84920</div>
-              <div class="doctor-meta-line"><i data-lucide="clock" style="width: 13px; height: 13px;"></i> Mon - Fri (09:00 AM - 04:00 PM)</div>
-              <button class="btn btn-secondary btn-sm" style="width: 100%; margin-top: 12px;" onclick="selectDoctor('Dr. Sarah Ramos, MD', 'Cardiology')">
-                Select Specialist
-              </button>
-            </div>
-          </div>
-
-          <div class="doctor-profile-card">
-            <div class="doctor-img-wrap">
-              <img src="images/doctor 2.jpg" alt="Dr. Julian Santos" class="doctor-img" onerror="this.src='https://ui-avatars.com/api/?name=Dr+Julian+Santos&background=0d9488&color=fff'">
-            </div>
-            <div class="doctor-card-body">
-              <div class="doctor-name">Dr. Julian Santos, MD</div>
-              <div class="doctor-spec">General Medicine & Diagnostics</div>
-              <div class="doctor-meta-line"><i data-lucide="shield-check" style="width: 13px; height: 13px;"></i> License: MED-71044</div>
-              <div class="doctor-meta-line"><i data-lucide="clock" style="width: 13px; height: 13px;"></i> Mon - Sat (08:00 AM - 02:00 PM)</div>
-              <button class="btn btn-secondary btn-sm" style="width: 100%; margin-top: 12px;" onclick="selectDoctor('Dr. Julian Santos, MD', 'General Medicine')">
-                Select Specialist
-              </button>
-            </div>
-          </div>
-
-          <div class="doctor-profile-card">
-            <div class="doctor-img-wrap">
-              <img src="images/doctor 3.jpg" alt="Dr. Elena Vance" class="doctor-img" onerror="this.src='https://ui-avatars.com/api/?name=Dr+Elena+Vance&background=0d9488&color=fff'">
-            </div>
-            <div class="doctor-card-body">
-              <div class="doctor-name">Dr. Elena Vance, MD</div>
-              <div class="doctor-spec">Dermatology & Skin Pathology</div>
-              <div class="doctor-meta-line"><i data-lucide="shield-check" style="width: 13px; height: 13px;"></i> License: MED-90218</div>
-              <div class="doctor-meta-line"><i data-lucide="clock" style="width: 13px; height: 13px;"></i> Tue - Thu (10:00 AM - 05:00 PM)</div>
-              <button class="btn btn-secondary btn-sm" style="width: 100%; margin-top: 12px;" onclick="selectDoctor('Dr. Elena Vance, MD', 'Dermatology')">
-                Select Specialist
-              </button>
-            </div>
-          </div>
-
-          <div class="doctor-profile-card">
-            <div class="doctor-img-wrap">
-              <img src="images/doctor 4.jpg" alt="Dr. Arthur Davies" class="doctor-img" onerror="this.src='https://ui-avatars.com/api/?name=Dr+Arthur+Davies&background=0d9488&color=fff'">
-            </div>
-            <div class="doctor-card-body">
-              <div class="doctor-name">Dr. Arthur Davies, MD</div>
-              <div class="doctor-spec">Pediatrics & Adolescent Health</div>
-              <div class="doctor-meta-line"><i data-lucide="shield-check" style="width: 13px; height: 13px;"></i> License: MED-63109</div>
-              <div class="doctor-meta-line"><i data-lucide="clock" style="width: 13px; height: 13px;"></i> Mon - Fri (09:00 AM - 03:00 PM)</div>
-              <button class="btn btn-secondary btn-sm" style="width: 100%; margin-top: 12px;" onclick="selectDoctor('Dr. Arthur Davies, MD', 'Pediatrics')">
-                Select Specialist
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ====================================================================
-         INTERFACE 2: PATIENT DASHBOARD
-         ==================================================================== -->
-    <section id="view-patient" class="role-view">
-      <div class="stats-row">
-        <div class="stat-box">
-          <div class="stat-top">
-            <span class="stat-label">Patient Record</span>
-            <i data-lucide="user-check" style="width: 20px; height: 20px; color: var(--teal-primary);"></i>
-          </div>
-          <div class="stat-val" style="font-size: 1.5rem;">Mariane Millera</div>
-          <span style="font-size: 0.75rem; color: var(--text-muted); margin-top: 6px;">ID: #PT-1042 • Blood: O+ • Age: 24</span>
-        </div>
-
-        <div class="stat-box">
-          <div class="stat-top">
-            <span class="stat-label">Upcoming Appointments</span>
-            <i data-lucide="calendar" style="width: 20px; height: 20px; color: var(--blue-primary);"></i>
-          </div>
-          <div class="stat-val" id="patient-active-count">1</div>
-          <span style="font-size: 0.75rem; color: var(--text-muted); margin-top: 6px;">Active consultation scheduled</span>
-        </div>
-
-        <div class="stat-box">
-          <div class="stat-top">
-            <span class="stat-label">Prescription History</span>
-            <i data-lucide="pill" style="width: 20px; height: 20px; color: var(--teal-primary);"></i>
-          </div>
-          <div class="stat-val">3</div>
-          <span style="font-size: 0.75rem; color: var(--text-muted); margin-top: 6px;">Active prescriptions on file</span>
-        </div>
-      </div>
-
-      <div class="card-panel">
-        <div class="card-header-row">
-          <h2 class="card-heading">My Scheduled Consultations</h2>
-          <button class="btn btn-teal btn-sm" onclick="switchRole('public')">
-            <i data-lucide="plus" style="width: 14px; height: 14px;"></i> Book New Visit
+        <!-- Floating Map Control Buttons -->
+        <div class="map-control-overlay">
+          <button class="map-control-btn" title="Use My Geolocation" onclick="requestUserLocation()">
+            <i data-lucide="crosshair" style="width: 18px; height: 18px;"></i>
+          </button>
+          <button class="map-control-btn" title="Enable Push Reminders" onclick="requestPushReminders()">
+            <i data-lucide="bell-ring" style="width: 18px; height: 18px;"></i>
           </button>
         </div>
 
-        <div class="table-container">
-          <table class="clinical-table">
+        <!-- Leaflet Map Mount Point -->
+        <div id="spatial-map" class="spatial-map-viewport"></div>
+      </div>
+
+      <!-- Floating Rounded Content Sheet (Overlapping the Map) -->
+      <section class="floating-sheet">
+        <div class="sheet-handle"></div>
+
+        <!-- Sheet Top Header Row -->
+        <div class="sheet-header-row">
+          <div class="sheet-title-group">
+            <h1>Find Care & Medical Specialists</h1>
+            <p class="sheet-subtitle">Accredited clinics, verified physicians, and real-time appointment scheduling.</p>
+          </div>
+          <div class="sheet-action-bubble-group">
+            <button class="bubble-btn bubble-btn-primary" onclick="openGuidedBookingModal()">
+              <i data-lucide="calendar-plus" style="width: 16px; height: 16px;"></i> Book Appointment
+            </button>
+          </div>
+        </div>
+
+        <!-- Selected Clinic Preview Area -->
+        <div id="selected-clinic-preview"></div>
+
+        <!-- Search & Filter Controls -->
+        <div style="margin: 24px 0 16px;">
+          <div style="position: relative; max-width: 600px;">
+            <i data-lucide="search" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: var(--text-muted);"></i>
+            <input type="text" id="doctor-search-input" class="form-input" style="padding-left: 46px; border-radius: var(--radius-full); background: var(--bg-card-subtle);" placeholder="Search doctors by name, specialty, condition, or clinic...">
+          </div>
+        </div>
+
+        <!-- Specialty Filter Chips -->
+        <div class="filter-chips-row">
+          <button class="spec-filter-chip active" data-spec="all" onclick="filterDoctors('all')">All Specialties</button>
+          <button class="spec-filter-chip" data-spec="Cardiology" onclick="filterDoctors('Cardiology')">Cardiology</button>
+          <button class="spec-filter-chip" data-spec="General Medicine" onclick="filterDoctors('General Medicine')">General Medicine</button>
+          <button class="spec-filter-chip" data-spec="Dermatology" onclick="filterDoctors('Dermatology')">Dermatology</button>
+          <button class="spec-filter-chip" data-spec="Pediatrics" onclick="filterDoctors('Pediatrics')">Pediatrics</button>
+          <button class="spec-filter-chip" data-spec="Orthopedics" onclick="filterDoctors('Orthopedics')">Orthopedics</button>
+          <button class="spec-filter-chip" data-spec="Neurology" onclick="filterDoctors('Neurology')">Neurology</button>
+        </div>
+
+        <!-- Featured Specialists Grid -->
+        <div class="section-header" style="margin-top: 14px;">
+          <h2 class="section-title">Accredited Specialists Near You</h2>
+          <span style="font-size: 0.8125rem; color: var(--text-muted);">Verified clinical licenses</span>
+        </div>
+        <div id="featured-doctors-grid" class="doctor-cards-grid">
+          <!-- Dynamically populated from JS -->
+        </div>
+
+        <!-- Nearby Clinics Section -->
+        <div class="section-header" style="margin-top: 36px;">
+          <h2 class="section-title">Nearby Medical Centers & Hospitals</h2>
+          <button class="section-link" onclick="requestUserLocation()">
+            <i data-lucide="crosshair" style="width: 14px; height: 14px;"></i> Update Distance
+          </button>
+        </div>
+        <div id="clinics-selection-grid" class="clinics-grid">
+          <!-- Dynamically populated from JS -->
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ====================================================================
+       VIEW 2: PATIENT VIEW (MODERN PATIENT DASHBOARD)
+       ==================================================================== -->
+  <main id="role-view-patient" class="role-view-container">
+    <div class="portal-container">
+
+      <!-- Floating Rounded Patient Information Sheet -->
+      <section class="floating-sheet" style="margin-top: 10px;">
+        <!-- Patient Greeting & Title -->
+        <div class="sheet-header-row">
+          <div class="sheet-title-group">
+            <h1>Good afternoon, Mariane</h1>
+            <p class="sheet-subtitle">Your personalized clinical care dashboard and active appointment schedule.</p>
+          </div>
+          <div class="sheet-action-bubble-group">
+            <button class="bubble-btn bubble-btn-primary" onclick="openGuidedBookingModal()">
+              <i data-lucide="plus" style="width: 16px; height: 16px;"></i> Schedule Visit
+            </button>
+          </div>
+        </div>
+
+        <!-- iOS-Inspired Metric Bubble Bar (matching reference image) -->
+        <div class="user-metric-bubble-bar">
+          <div style="display: flex; align-items: center; gap: 14px;">
+            <div class="avatar-circle" style="width: 44px; height: 44px; font-size: 1rem;">MM</div>
+            <div>
+              <div style="font-weight: 800; font-size: 1rem; color: #0f172a;">Mariane Millera</div>
+              <div style="font-size: 0.75rem; color: #64748b;">Patient Record #PT-1042 • Blood: O+</div>
+            </div>
+          </div>
+
+          <div class="metric-item-group">
+            <div class="metric-stat">
+              <span id="patient-active-appts-metric" class="metric-val">1 Upcoming</span>
+              <span class="metric-label"><i data-lucide="calendar" style="width: 12px; height: 12px;"></i> Scheduled</span>
+            </div>
+            <div class="metric-stat">
+              <span id="patient-completed-appts-metric" class="metric-val">3 Records</span>
+              <span class="metric-label"><i data-lucide="file-check" style="width: 12px; height: 12px;"></i> Completed</span>
+            </div>
+            <div class="metric-stat">
+              <span class="metric-val">St. Jude</span>
+              <span class="metric-label"><i data-lucide="hospital" style="width: 12px; height: 12px;"></i> Primary Clinic</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Next Appointment Highlight Card -->
+        <div id="patient-next-appt-card">
+          <!-- Dynamically rendered -->
+        </div>
+
+        <!-- Quick Actions Bar -->
+        <div class="quick-actions-bar">
+          <div class="quick-action-item" onclick="openGuidedBookingModal()">
+            <i data-lucide="calendar-plus" style="width: 16px; height: 16px; color: var(--accent-primary);"></i>
+            <span>Book Visit</span>
+          </div>
+          <div class="quick-action-item" onclick="switchRole('public')">
+            <i data-lucide="search" style="width: 16px; height: 16px; color: var(--accent-primary);"></i>
+            <span>Find Doctor</span>
+          </div>
+          <div class="quick-action-item" onclick="switchRole('public')">
+            <i data-lucide="map" style="width: 16px; height: 16px; color: var(--accent-primary);"></i>
+            <span>Clinic Map</span>
+          </div>
+          <div class="quick-action-item" onclick="openTelehealthRoom(1)">
+            <i data-lucide="video" style="width: 16px; height: 16px; color: var(--accent-primary);"></i>
+            <span>Telehealth</span>
+          </div>
+          <div class="quick-action-item" onclick="alert('3 Active Prescriptions on file: Atorvastatin 20mg, Lisinopril 10mg, Hydrocortisone 1%.')">
+            <i data-lucide="pill" style="width: 16px; height: 16px; color: var(--accent-primary);"></i>
+            <span>Prescriptions</span>
+          </div>
+        </div>
+
+        <!-- Appointment Management Section -->
+        <div class="section-header" style="margin-top: 14px;">
+          <h2 class="section-title">My Appointments</h2>
+          <div class="filter-tabs-container" style="margin-bottom: 0;">
+            <button class="filter-tab-pill active" data-filter="upcoming" onclick="filterAppointments('upcoming')">Upcoming</button>
+            <button class="filter-tab-pill" data-filter="completed" onclick="filterAppointments('completed')">Completed</button>
+            <button class="filter-tab-pill" data-filter="cancelled" onclick="filterAppointments('cancelled')">Cancelled</button>
+          </div>
+        </div>
+
+        <!-- Appointments List -->
+        <div id="patient-appointments-list" style="margin-top: 16px;">
+          <!-- Dynamically populated from JS -->
+        </div>
+
+        <!-- Messages & Medical Records Section -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 28px;">
+          <!-- Messaging Simulator -->
+          <div class="clinic-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <h3 style="font-size: 1rem; font-weight: 700; color: #0f172a;">Doctor Messaging</h3>
+              <span class="status-badge confirmed">Direct Line</span>
+            </div>
+            <div id="chat-messages-container" style="height: 180px; overflow-y: auto; background: #f8fafc; border-radius: var(--radius-md); padding: 12px; margin-bottom: 12px; border: 1px solid var(--border-subtle);">
+              <div style="display: flex; justify-content: flex-start; margin-bottom: 10px;">
+                <div style="background: #e2eaf4; color: #0f172a; padding: 8px 12px; border-radius: 16px 16px 16px 4px; font-size: 0.8125rem;">
+                  <strong>Dr. Sarah Ramos:</strong> Please remember to bring your previous ECG records to our follow-up visit.
+                </div>
+              </div>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <input type="text" id="chat-input-text" class="form-input" placeholder="Type a message to Dr. Ramos..." onkeydown="if(event.key==='Enter') sendPatientChatMessage()">
+              <button class="bubble-btn bubble-btn-primary" style="padding: 0 16px;" onclick="sendPatientChatMessage()">
+                <i data-lucide="send" style="width: 14px; height: 14px;"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Active Prescriptions -->
+          <div class="clinic-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <h3 style="font-size: 1rem; font-weight: 700; color: #0f172a;">Prescriptions & Records</h3>
+              <span class="status-badge" style="background: #eff6ff; color: #2563eb;">3 Active</span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              <div style="padding: 10px 14px; background: #f8fafc; border-radius: var(--radius-md); border: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <div style="font-weight: 700; font-size: 0.8125rem;">Atorvastatin 20mg</div>
+                  <div style="font-size: 0.6875rem; color: var(--text-muted);">Take 1 tablet daily at bedtime • Dr. Ramos</div>
+                </div>
+                <button class="bubble-btn bubble-btn-subtle" style="padding: 4px 10px; font-size: 0.6875rem;" onclick="alert('Refill request sent to St. Jude Pharmacy.')">Refill</button>
+              </div>
+
+              <div style="padding: 10px 14px; background: #f8fafc; border-radius: var(--radius-md); border: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <div style="font-weight: 700; font-size: 0.8125rem;">Lisinopril 10mg</div>
+                  <div style="font-size: 0.6875rem; color: var(--text-muted);">Take 1 tablet morning • Dr. Santos</div>
+                </div>
+                <button class="bubble-btn bubble-btn-subtle" style="padding: 4px 10px; font-size: 0.6875rem;" onclick="alert('Refill request sent to St. Jude Pharmacy.')">Refill</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+    </div>
+  </main>
+
+  <!-- ====================================================================
+       VIEW 3: DOCTOR VIEW (CLINICAL STAFF WORKSPACE)
+       ==================================================================== -->
+  <main id="role-view-doctor" class="role-view-container">
+    <div class="portal-container">
+      <section class="floating-sheet" style="margin-top: 10px;">
+        <div class="sheet-header-row">
+          <div class="sheet-title-group">
+            <h1>Doctor Clinical Portal</h1>
+            <p class="sheet-subtitle">Physician: Dr. Sarah Ramos, MD • Cardiology & Internal Medicine • License MED-84920</p>
+          </div>
+          <span class="status-badge confirmed">
+            <i data-lucide="check-circle" style="width: 13px; height: 13px;"></i> Clinic Active
+          </span>
+        </div>
+
+        <!-- Doctor Metric Summary Bar -->
+        <div class="user-metric-bubble-bar">
+          <div class="metric-stat">
+            <span id="doctor-metric-queue" class="metric-val">3</span>
+            <span class="metric-label"><i data-lucide="users" style="width: 12px; height: 12px;"></i> Today's Queue</span>
+          </div>
+          <div class="metric-stat">
+            <span id="doctor-metric-done" class="metric-val">14</span>
+            <span class="metric-label"><i data-lucide="check" style="width: 12px; height: 12px;"></i> Completed</span>
+          </div>
+          <div class="metric-stat">
+            <span class="metric-val">St. Jude Medical</span>
+            <span class="metric-label"><i data-lucide="building" style="width: 12px; height: 12px;"></i> Facility Suite 400</span>
+          </div>
+          <div class="metric-stat">
+            <span class="metric-val">09:00 - 16:00</span>
+            <span class="metric-label"><i data-lucide="clock" style="width: 12px; height: 12px;"></i> Hours</span>
+          </div>
+        </div>
+
+        <!-- Today's Schedule Timeline -->
+        <div class="section-header" style="margin-top: 24px;">
+          <h2 class="section-title">Today's Consultation Schedule</h2>
+        </div>
+        <div class="schedule-timeline">
+          <div class="timeline-slot-card">
+            <div class="slot-time-col">09:00 AM</div>
+            <div class="slot-info-col">
+              <div style="font-weight: 700; font-size: 0.9375rem;">Mariane Millera</div>
+              <div style="font-size: 0.75rem; color: var(--text-muted);">Cardiology Follow-up • In-Person Examination</div>
+            </div>
+            <span class="status-badge confirmed">Confirmed</span>
+          </div>
+
+          <div class="timeline-slot-card">
+            <div class="slot-time-col">10:30 AM</div>
+            <div class="slot-info-col">
+              <div style="font-weight: 700; font-size: 0.9375rem;">Robert Sterling</div>
+              <div style="font-size: 0.75rem; color: var(--text-muted);">Echocardiogram Review • Telehealth Video Call</div>
+            </div>
+            <span class="status-badge" style="background: #eff6ff; color: #2563eb;">Telehealth</span>
+          </div>
+
+          <div class="timeline-slot-card">
+            <div class="slot-time-col">01:15 PM</div>
+            <div class="slot-info-col">
+              <div style="font-weight: 700; font-size: 0.9375rem;">Clara Oswald</div>
+              <div style="font-size: 0.75rem; color: var(--text-muted);">Hypertension Management & Lab Panel Review</div>
+            </div>
+            <span class="status-badge pending">Pending</span>
+          </div>
+        </div>
+
+        <!-- Patient Queue Management Table -->
+        <div class="section-header" style="margin-top: 36px;">
+          <h2 class="section-title">Patient Queue & Clinical Actions</h2>
+        </div>
+        <div class="table-responsive-wrapper">
+          <table class="admin-data-table">
             <thead>
               <tr>
-                <th>Doctor</th>
-                <th>Service</th>
-                <th>Scheduled Date</th>
-                <th>Reason / Chief Complaint</th>
+                <th>Patient</th>
+                <th>Scheduled</th>
+                <th>Service & Format</th>
+                <th>Chief Complaint</th>
                 <th>Status</th>
                 <th style="text-align: right;">Action</th>
               </tr>
             </thead>
-            <tbody id="patient-appointments-table">
+            <tbody id="doctor-schedule-tbody">
               <!-- Dynamically populated from JS -->
             </tbody>
           </table>
         </div>
-      </div>
-    </section>
 
-    <!-- ====================================================================
-         INTERFACE 3: DOCTOR / CLINICAL STAFF DASHBOARD
-         ==================================================================== -->
-    <section id="view-doctor" class="role-view">
-      <div class="stats-row">
-        <div class="stat-box">
-          <div class="stat-top">
-            <span class="stat-label">Clinical Provider</span>
-            <i data-lucide="stethoscope" style="width: 20px; height: 20px; color: var(--teal-primary);"></i>
+      </section>
+    </div>
+  </main>
+
+  <!-- ====================================================================
+       VIEW 4: ADMIN SYSTEM (HOSPITAL OPERATIONS MANAGEMENT)
+       ==================================================================== -->
+  <main id="role-view-admin" class="role-view-container">
+    <div class="portal-container">
+      <section class="floating-sheet" style="margin-top: 10px;">
+        <div class="sheet-header-row">
+          <div class="sheet-title-group">
+            <h1>Hospital Clinical Operations</h1>
+            <p class="sheet-subtitle">Accredited facility administration, doctor rosters, patient records, and appointment throughput.</p>
           </div>
-          <div class="stat-val" style="font-size: 1.5rem;">Dr. Sarah Ramos, MD</div>
-          <span style="font-size: 0.75rem; color: var(--text-muted); margin-top: 6px;">Department of Cardiology • License MED-84920</span>
+          <button class="bubble-btn bubble-btn-primary" onclick="alert('Exporting system clinical report as CSV...')">
+            <i data-lucide="download" style="width: 14px; height: 14px;"></i> Export Clinical Logs
+          </button>
         </div>
 
-        <div class="stat-box">
-          <div class="stat-top">
-            <span class="stat-label">Today's Patient Queue</span>
-            <i data-lucide="users" style="width: 20px; height: 20px; color: var(--blue-primary);"></i>
+        <!-- Admin Operations Metrics Bar -->
+        <div class="user-metric-bubble-bar">
+          <div class="metric-stat">
+            <span id="admin-metric-total" class="metric-val">18</span>
+            <span class="metric-label">Total Appointments</span>
           </div>
-          <div class="stat-val" id="doctor-queue-count">3</div>
-          <span style="font-size: 0.75rem; color: var(--text-muted); margin-top: 6px;">Consultations scheduled for today</span>
-        </div>
-
-        <div class="stat-box">
-          <div class="stat-top">
-            <span class="stat-label">Completed Consultations</span>
-            <i data-lucide="check-circle" style="width: 20px; height: 20px; color: var(--teal-primary);"></i>
+          <div class="metric-stat">
+            <span class="metric-val">6</span>
+            <span class="metric-label">Active Doctors</span>
           </div>
-          <div class="stat-val" id="doctor-completed-count">14</div>
-          <span style="font-size: 0.75rem; color: var(--text-muted); margin-top: 6px;">This month's completed sessions</span>
+          <div class="metric-stat">
+            <span class="metric-val">4</span>
+            <span class="metric-label">Clinic Locations</span>
+          </div>
+          <div class="metric-stat">
+            <span class="metric-val">248</span>
+            <span class="metric-label">Registered Patients</span>
+          </div>
+          <div class="metric-stat">
+            <span class="metric-val">94%</span>
+            <span class="metric-label">Satisfaction</span>
+          </div>
         </div>
-      </div>
 
-      <div class="card-panel">
-        <div class="card-header-row">
-          <h2 class="card-heading">Doctor Patient Schedule & Consultations Queue</h2>
+        <!-- Master Appointments Management Table -->
+        <div class="section-header" style="margin-top: 24px;">
+          <h2 class="section-title">All Clinic Appointments & Schedule Logs</h2>
         </div>
-
-        <div class="table-container">
-          <table class="clinical-table">
+        <div class="table-responsive-wrapper">
+          <table class="admin-data-table">
             <thead>
               <tr>
-                <th>Patient Name</th>
-                <th>Date & Time</th>
-                <th>Clinical Service</th>
-                <th>Reported Symptoms</th>
+                <th>Reference</th>
+                <th>Patient</th>
+                <th>Physician</th>
+                <th>Specialty</th>
+                <th>Date & Slot</th>
                 <th>Status</th>
-                <th style="text-align: right;">Clinical Action</th>
+                <th style="text-align: right;">Status Change</th>
               </tr>
             </thead>
-            <tbody id="doctor-schedule-table">
+            <tbody id="admin-appointments-tbody">
               <!-- Dynamically populated from JS -->
             </tbody>
           </table>
         </div>
-      </div>
-    </section>
 
-    <!-- ====================================================================
-         INTERFACE 4: HOSPITAL ADMIN DASHBOARD
-         ==================================================================== -->
-    <section id="view-admin" class="role-view">
-      <div class="stats-row">
-        <div class="stat-box">
-          <div class="stat-top">
-            <span class="stat-label">Total Doctors</span>
-            <i data-lucide="user-plus" style="width: 20px; height: 20px; color: var(--teal-primary);"></i>
-          </div>
-          <div class="stat-val">12</div>
-          <span style="font-size: 0.75rem; color: var(--text-muted); margin-top: 6px;">Accredited active staff</span>
+        <!-- Hospital Facilities Directory Table -->
+        <div class="section-header" style="margin-top: 36px;">
+          <h2 class="section-title">Accredited Clinical Facilities</h2>
         </div>
-
-        <div class="stat-box">
-          <div class="stat-top">
-            <span class="stat-label">Registered Patients</span>
-            <i data-lucide="users" style="width: 20px; height: 20px; color: var(--blue-primary);"></i>
-          </div>
-          <div class="stat-val">248</div>
-          <span style="font-size: 0.75rem; color: var(--text-muted); margin-top: 6px;">Total patient records in system</span>
-        </div>
-
-        <div class="stat-box">
-          <div class="stat-top">
-            <span class="stat-label">System Appointments</span>
-            <i data-lucide="clipboard-list" style="width: 20px; height: 20px; color: var(--teal-primary);"></i>
-          </div>
-          <div class="stat-val" id="admin-total-appts">18</div>
-          <span style="font-size: 0.75rem; color: var(--text-muted); margin-top: 6px;">Bookings logged across departments</span>
-        </div>
-      </div>
-
-      <div class="card-panel">
-        <div class="card-header-row">
-          <h2 class="card-heading">Hospital Staff Directory</h2>
-        </div>
-
-        <div class="table-container">
-          <table class="clinical-table">
+        <div class="table-responsive-wrapper">
+          <table class="admin-data-table">
             <thead>
               <tr>
-                <th>Doctor</th>
-                <th>Specialization</th>
-                <th>Medical License</th>
-                <th>Weekly Availability</th>
+                <th>Facility Name</th>
+                <th>Address</th>
+                <th>Contact</th>
+                <th>Hours</th>
                 <th>Status</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td><strong>Dr. Sarah Ramos</strong></td>
-                <td>Cardiology & Cardiovascular Care</td>
-                <td>MED-84920</td>
-                <td>Mon - Fri (09:00 - 16:00)</td>
-                <td><span class="badge badge-approved">Active Provider</span></td>
+                <td><strong>St. Jude Medical Center</strong></td>
+                <td>450 Lexington Ave, Suite 400, New York</td>
+                <td>(212) 555-0140</td>
+                <td>Mon - Fri: 8:00 AM - 7:00 PM</td>
+                <td><span class="status-badge confirmed">Operational</span></td>
               </tr>
               <tr>
-                <td><strong>Dr. Julian Santos</strong></td>
-                <td>General Internal Medicine</td>
-                <td>MED-71044</td>
-                <td>Mon - Sat (08:00 - 14:00)</td>
-                <td><span class="badge badge-approved">Active Provider</span></td>
+                <td><strong>Metropolitan Health Pavilion</strong></td>
+                <td>120 E 34th St, New York</td>
+                <td>(212) 555-0192</td>
+                <td>Daily: 7:00 AM - 9:00 PM</td>
+                <td><span class="status-badge confirmed">Operational</span></td>
               </tr>
               <tr>
-                <td><strong>Dr. Elena Vance</strong></td>
-                <td>Dermatology & Skin Health</td>
-                <td>MED-90218</td>
-                <td>Tue - Thu (10:00 - 17:00)</td>
-                <td><span class="badge badge-approved">Active Provider</span></td>
+                <td><strong>Upper East Specialty Care</strong></td>
+                <td>890 5th Ave, New York</td>
+                <td>(212) 555-0218</td>
+                <td>Mon - Fri: 8:30 AM - 5:30 PM</td>
+                <td><span class="status-badge confirmed">Operational</span></td>
               </tr>
               <tr>
-                <td><strong>Dr. Arthur Davies</strong></td>
-                <td>Pediatrics & Child Wellness</td>
-                <td>MED-63109</td>
-                <td>Mon - Fri (09:00 - 15:00)</td>
-                <td><span class="badge badge-approved">Active Provider</span></td>
+                <td><strong>Riverside Pediatrics</strong></td>
+                <td>210 Riverside Dr, New York</td>
+                <td>(212) 555-0312</td>
+                <td>Mon - Sat: 8:00 AM - 4:00 PM</td>
+                <td><span class="status-badge confirmed">Operational</span></td>
               </tr>
             </tbody>
           </table>
         </div>
-      </div>
-    </section>
 
+      </section>
+    </div>
   </main>
 
-  <script>
-    // Initial Healthcare Appointment Store
-    const DEFAULT_APPOINTMENTS = [
-      {
-        id: 1,
-        patientName: 'Mariane Millera',
-        email: 'mariane.millera@gmail.com',
-        phone: '+1 555-0192',
-        doctor: 'Dr. Sarah Ramos, MD',
-        service: 'Cardiology',
-        date: '2026-09-30',
-        reason: 'Follow-up on resting heart rate rhythm and mild chest tightness after light exercise.',
-        status: 'approved'
-      },
-      {
-        id: 2,
-        patientName: 'Trish Anne Revilla',
-        email: 'trish.revilla@gmail.com',
-        phone: '+1 555-0841',
-        doctor: 'Dr. Julian Santos, MD',
-        service: 'General Medicine',
-        date: '2026-10-02',
-        reason: 'Annual preventive bloodwork panel and comprehensive wellness review.',
-        status: 'pending'
-      },
-      {
-        id: 3,
-        patientName: 'Lady Liberty Caragay',
-        email: 'ladycaragay23@gmail.com',
-        phone: '+1 555-0423',
-        doctor: 'Dr. Sarah Ramos, MD',
-        service: 'Cardiology',
-        date: '2026-09-22',
-        reason: 'Routine pre-sports cardiovascular clearance check.',
-        status: 'completed'
-      }
-    ];
+  <!-- ====================================================================
+       FLOATING iOS BOTTOM DOCK NAVIGATION (Mobile Only)
+       ==================================================================== -->
+  <nav class="mobile-dock-nav" aria-label="Mobile Navigation Dock">
+    <button class="dock-item active" data-role="public" onclick="switchRole('public')">
+      <i data-lucide="compass" style="width: 20px; height: 20px;"></i>
+      <span>Explore</span>
+    </button>
+    <button class="dock-item" data-role="patient" onclick="switchRole('patient')">
+      <i data-lucide="calendar" style="width: 20px; height: 20px;"></i>
+      <span>Visits</span>
+    </button>
+    <button class="dock-item" onclick="openGuidedBookingModal()">
+      <div style="width: 40px; height: 40px; border-radius: 50%; background: #2563eb; color: #fff; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35); margin-top: -12px;">
+        <i data-lucide="plus" style="width: 22px; height: 22px; stroke-width: 2.5;"></i>
+      </div>
+      <span>Book</span>
+    </button>
+    <button class="dock-item" data-role="doctor" onclick="switchRole('doctor')">
+      <i data-lucide="stethoscope" style="width: 20px; height: 20px;"></i>
+      <span>Doctor</span>
+    </button>
+    <button class="dock-item" data-role="admin" onclick="switchRole('admin')">
+      <i data-lucide="shield" style="width: 20px; height: 20px;"></i>
+      <span>Admin</span>
+    </button>
+  </nav>
 
-    let appointments = [];
-    try {
-      const stored = localStorage.getItem('healthcare_appts');
-      appointments = stored ? JSON.parse(stored) : DEFAULT_APPOINTMENTS;
-    } catch(e) {
-      appointments = DEFAULT_APPOINTMENTS;
-    }
+  <!-- ====================================================================
+       MODALS: GUIDED 10-STEP BOOKING FLOW
+       ==================================================================== -->
+  <div id="booking-wizard-modal" class="modal-overlay">
+    <div class="modal-surface" style="max-width: 680px;">
+      <div class="modal-header">
+        <div>
+          <h2 style="font-size: 1.1875rem; font-weight: 800; color: #0f172a;">Schedule a Medical Consultation</h2>
+          <span style="font-size: 0.75rem; color: var(--text-muted);">10-Step Guided Clinical Reservation</span>
+        </div>
+        <button class="modal-close-btn" onclick="closeGuidedBookingModal()">
+          <i data-lucide="x" style="width: 18px; height: 18px;"></i>
+        </button>
+      </div>
 
-    function saveAppointments() {
-      localStorage.setItem('healthcare_appts', JSON.stringify(appointments));
-      renderTables();
-    }
+      <!-- Stepper Progress Bar -->
+      <div class="wizard-stepper">
+        <div class="stepper-progress-bar">
+          <div id="stepper-fill" class="stepper-progress-fill" style="width: 0%;"></div>
+        </div>
+        <div class="step-bubble wizard-step-node active" data-step="1">1</div>
+        <div class="step-bubble wizard-step-node" data-step="2">2</div>
+        <div class="step-bubble wizard-step-node" data-step="3">3</div>
+        <div class="step-bubble wizard-step-node" data-step="4">4</div>
+        <div class="step-bubble wizard-step-node" data-step="5">5</div>
+        <div class="step-bubble wizard-step-node" data-step="6">6</div>
+        <div class="step-bubble wizard-step-node" data-step="7">7</div>
+        <div class="step-bubble wizard-step-node" data-step="8">8</div>
+        <div class="step-bubble wizard-step-node" data-step="9">9</div>
+        <div class="step-bubble wizard-step-node" data-step="10">✓</div>
+      </div>
 
-    // Role Switching
-    function switchRole(roleKey) {
-      document.querySelectorAll('.role-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.getAttribute('data-target') === roleKey);
-      });
-      document.querySelectorAll('.role-view').forEach(v => {
-        v.classList.remove('active');
-        if (v.id === `view-${roleKey}`) v.classList.add('active');
-      });
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+      <!-- Step Body Panel -->
+      <div id="wizard-step-content" class="wizard-body-panel">
+        <!-- Injected dynamically via app.js -->
+      </div>
 
-    document.querySelectorAll('.role-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        switchRole(btn.getAttribute('data-target'));
-      });
-    });
+      <!-- Wizard Navigation Footer -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 24px; padding-top: 14px; border-top: 1px solid var(--border-subtle);">
+        <button id="wiz-prev-btn" class="bubble-btn bubble-btn-subtle" onclick="prevBookingStep()">
+          <i data-lucide="arrow-left" style="width: 14px; height: 14px;"></i> Back
+        </button>
+        <button id="wiz-next-btn" class="bubble-btn bubble-btn-primary" onclick="nextBookingStep()">
+          Continue
+        </button>
+      </div>
+    </div>
+  </div>
 
-    function selectDoctor(doctorName, service) {
-      const docSelect = document.getElementById('book-doctor');
-      const srvSelect = document.getElementById('book-service');
-      if (docSelect) docSelect.value = doctorName;
-      if (srvSelect) srvSelect.value = service;
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+  <!-- ====================================================================
+       MODAL: DOCTOR PROFILE & CREDENTIALS
+       ==================================================================== -->
+  <div id="doctor-profile-modal" class="modal-overlay">
+    <div class="modal-surface">
+      <div class="modal-header">
+        <span style="font-size: 0.75rem; font-weight: 700; color: var(--accent-primary); text-transform: uppercase;">Doctor Credentials</span>
+        <button class="modal-close-btn" onclick="closeDoctorProfileModal()">
+          <i data-lucide="x" style="width: 18px; height: 18px;"></i>
+        </button>
+      </div>
+      <div id="doctor-profile-modal-body">
+        <!-- Injected dynamically -->
+      </div>
+    </div>
+  </div>
 
-    // Render Tables
-    function renderTables() {
-      // Patient View
-      const patientTable = document.getElementById('patient-appointments-table');
-      if (patientTable) {
-        patientTable.innerHTML = appointments.map(a => `
-          <tr>
-            <td><strong>${a.doctor}</strong></td>
-            <td><span class="badge badge-approved">${a.service}</span></td>
-            <td>${a.date}</td>
-            <td style="max-width: 320px;">${a.reason}</td>
-            <td><span class="badge badge-${a.status}">${a.status}</span></td>
-            <td style="text-align: right;">
-              ${a.status !== 'cancelled' ? `
-                <button class="btn btn-secondary btn-sm" onclick="cancelAppointment(${a.id})" style="color: var(--rose-danger);">
-                  Cancel
-                </button>
-              ` : '<span style="font-size: 0.75rem; color: var(--text-muted);">Cancelled</span>'}
-            </td>
-          </tr>
-        `).join('');
-      }
+  <!-- ====================================================================
+       MODAL: TELEHEALTH VIDEO CONSULTATION DEMO
+       ==================================================================== -->
+  <div id="telehealth-room-modal" class="modal-overlay">
+    <div class="modal-surface" style="max-width: 640px; background: #0f172a; color: #ffffff;">
+      <div class="modal-header" style="border-color: rgba(255, 255, 255, 0.1);">
+        <div>
+          <div style="font-size: 0.75rem; font-weight: 700; color: #60a5fa; text-transform: uppercase;">Telehealth Video Consultation</div>
+          <div id="telehealth-doc-name" style="font-size: 1.125rem; font-weight: 700; color: #ffffff;">Dr. Sarah Ramos, MD</div>
+        </div>
+        <button class="modal-close-btn" style="background: rgba(255, 255, 255, 0.1); color: #ffffff;" onclick="closeTelehealthRoom()">
+          <i data-lucide="x" style="width: 18px; height: 18px;"></i>
+        </button>
+      </div>
 
-      // Doctor View
-      const docTable = document.getElementById('doctor-schedule-table');
-      if (docTable) {
-        docTable.innerHTML = appointments.map(a => `
-          <tr>
-            <td>
-              <strong>${a.patientName}</strong>
-              <div style="font-size: 0.75rem; color: var(--text-muted);">${a.email}</div>
-            </td>
-            <td>${a.date}</td>
-            <td>${a.service}</td>
-            <td style="max-width: 320px;">${a.reason}</td>
-            <td><span class="badge badge-${a.status}">${a.status}</span></td>
-            <td style="text-align: right;">
-              ${a.status === 'pending' ? `
-                <button class="btn btn-teal btn-sm" onclick="approveAppointment(${a.id})">Approve</button>
-              ` : a.status === 'approved' ? `
-                <button class="btn btn-secondary btn-sm" onclick="completeAppointment(${a.id})">Mark Done</button>
-              ` : '<span style="font-size: 0.75rem; color: var(--text-muted);">Archived</span>'}
-            </td>
-          </tr>
-        `).join('');
-      }
+      <div style="position: relative; height: 280px; background: #1e293b; border-radius: var(--radius-lg); overflow: hidden; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+        <div style="text-align: center;">
+          <div style="width: 64px; height: 64px; border-radius: 50%; background: #2563eb; color: #fff; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
+            <i data-lucide="video" style="width: 32px; height: 32px;"></i>
+          </div>
+          <div style="font-size: 1rem; font-weight: 700;">Encrypted Clinical Video Connection Active</div>
+          <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 4px;">HD 1080p • 256-bit End-to-End Encryption • Audio Verified</div>
+        </div>
 
-      // Update Counts
-      const activeCount = appointments.filter(a => a.status === 'approved' || a.status === 'pending').length;
-      const completedCount = appointments.filter(a => a.status === 'completed').length;
-      
-      const patActive = document.getElementById('patient-active-count');
-      if (patActive) patActive.textContent = activeCount;
+        <div style="position: absolute; bottom: 12px; left: 12px; background: rgba(0, 0, 0, 0.6); padding: 4px 10px; border-radius: 20px; font-size: 0.75rem;">
+          Patient: Mariane Millera
+        </div>
+      </div>
 
-      const docQueue = document.getElementById('doctor-queue-count');
-      if (docQueue) docQueue.textContent = activeCount;
+      <div style="display: flex; justify-content: center; gap: 14px; margin-bottom: 12px;">
+        <button class="bubble-btn bubble-btn-subtle" style="background: rgba(255, 255, 255, 0.15); color: #fff; border: none;" onclick="alert('Microphone toggled.')">
+          <i data-lucide="mic" style="width: 16px; height: 16px;"></i> Mute
+        </button>
+        <button class="bubble-btn bubble-btn-subtle" style="background: rgba(255, 255, 255, 0.15); color: #fff; border: none;" onclick="alert('Camera toggled.')">
+          <i data-lucide="video" style="width: 16px; height: 16px;"></i> Video
+        </button>
+        <button class="bubble-btn bubble-btn-primary" style="background: #ef4444;" onclick="closeTelehealthRoom()">
+          <i data-lucide="phone-off" style="width: 16px; height: 16px;"></i> End Call
+        </button>
+      </div>
+    </div>
+  </div>
 
-      const docDone = document.getElementById('doctor-completed-count');
-      if (docDone) docDone.textContent = completedCount;
+  <!-- ====================================================================
+       MODAL: RESCHEDULE APPOINTMENT
+       ==================================================================== -->
+  <div id="reschedule-modal" class="modal-overlay">
+    <div class="modal-surface" style="max-width: 440px;">
+      <div class="modal-header">
+        <h3 style="font-size: 1.0625rem; font-weight: 700;">Reschedule Consultation</h3>
+        <button class="modal-close-btn" onclick="closeRescheduleModal()">
+          <i data-lucide="x" style="width: 18px; height: 18px;"></i>
+        </button>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+        <div class="form-field">
+          <label class="form-label">Select New Date</label>
+          <input type="date" id="reschedule-date-input" class="form-input" value="2026-10-15" min="2026-10-03">
+        </div>
+        <div class="form-field">
+          <label class="form-label">Select New Time Slot</label>
+          <select id="reschedule-time-input" class="form-select">
+            <option value="09:00 AM">09:00 AM</option>
+            <option value="10:30 AM">10:30 AM</option>
+            <option value="01:15 PM">01:15 PM</option>
+            <option value="03:00 PM">03:00 PM</option>
+          </select>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px;">
+          <button class="bubble-btn bubble-btn-subtle" onclick="closeRescheduleModal()">Cancel</button>
+          <button class="bubble-btn bubble-btn-primary" onclick="submitReschedule()">Confirm Reschedule</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-      const adminTotal = document.getElementById('admin-total-appts');
-      if (adminTotal) adminTotal.textContent = appointments.length;
+  <!-- ====================================================================
+       MODAL: CLINICAL NOTES (DOCTOR VIEW)
+       ==================================================================== -->
+  <div id="clinical-notes-modal" class="modal-overlay">
+    <div class="modal-surface" style="max-width: 500px;">
+      <div class="modal-header">
+        <h3 style="font-size: 1.0625rem; font-weight: 700;">Record Clinical Consultation Notes</h3>
+        <button class="modal-close-btn" onclick="closeClinicalNotesModal()">
+          <i data-lucide="x" style="width: 18px; height: 18px;"></i>
+        </button>
+      </div>
+      <div class="form-field">
+        <label class="form-label">Physician Diagnosis & Prescription Notes</label>
+        <textarea id="doctor-notes-textarea" class="form-textarea" rows="5" placeholder="Enter clinical observations, vital stats, follow-up instructions, or prescribed medications..."></textarea>
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px;">
+        <button class="bubble-btn bubble-btn-subtle" onclick="closeClinicalNotesModal()">Cancel</button>
+        <button class="bubble-btn bubble-btn-primary" onclick="saveClinicalNotes()">Save Notes to Record</button>
+      </div>
+    </div>
+  </div>
 
-      if (window.lucide) window.lucide.createIcons();
-    }
+  <!-- ====================================================================
+       MODAL: NOTIFICATIONS CENTER TRAY
+       ==================================================================== -->
+  <div id="notifications-tray-modal" class="modal-overlay">
+    <div class="modal-surface" style="max-width: 420px;">
+      <div class="modal-header">
+        <h3 style="font-size: 1rem; font-weight: 700;">Notification Center</h3>
+        <button class="bubble-btn bubble-btn-subtle" style="font-size: 0.6875rem; padding: 4px 10px;" onclick="markAllNotificationsRead()">Mark all as read</button>
+      </div>
+      <div id="notifications-list" style="max-height: 360px; overflow-y: auto;">
+        <!-- Injected dynamically -->
+      </div>
+      <div style="margin-top: 14px; text-align: center;">
+        <button class="bubble-btn bubble-btn-subtle" style="width: 100%;" onclick="toggleNotificationsTray()">Close Tray</button>
+      </div>
+    </div>
+  </div>
 
-    function approveAppointment(id) {
-      appointments = appointments.map(a => a.id === id ? { ...a, status: 'approved' } : a);
-      saveAppointments();
-    }
+  <!-- Modern Application Store & Interaction Script -->
+  <script src="assets/js/app.js"></script>
 
-    function completeAppointment(id) {
-      appointments = appointments.map(a => a.id === id ? { ...a, status: 'completed' } : a);
-      saveAppointments();
-    }
-
-    function cancelAppointment(id) {
-      if (confirm('Cancel this consultation appointment?')) {
-        appointments = appointments.map(a => a.id === id ? { ...a, status: 'cancelled' } : a);
-        saveAppointments();
-      }
-    }
-
-    // Public Booking Form Submit
-    document.getElementById('public-booking-form').addEventListener('submit', (e) => {
-      e.preventDefault();
-      const newAppt = {
-        id: Date.now(),
-        patientName: document.getElementById('book-name').value.trim(),
-        email: document.getElementById('book-email').value.trim(),
-        phone: document.getElementById('book-phone').value.trim(),
-        service: document.getElementById('book-service').value,
-        doctor: document.getElementById('book-doctor').value,
-        date: document.getElementById('book-date').value,
-        reason: document.getElementById('book-reason').value.trim(),
-        status: 'approved'
-      };
-
-      appointments.unshift(newAppt);
-      saveAppointments();
-      alert(`Appointment successfully confirmed with ${newAppt.doctor} for ${newAppt.date}!`);
-      document.getElementById('public-booking-form').reset();
-      switchRole('patient');
-    });
-
-    document.addEventListener('DOMContentLoaded', () => {
-      renderTables();
-    });
-  </script>
 </body>
 </html>

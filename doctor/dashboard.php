@@ -2,7 +2,10 @@
 session_start();
 require_once '../config/database.php';
 
-// Check if user is logged in and is doctor
+if (!$pdo) {
+    header('Location: ../index.html?role=doctor');
+    exit();
+}
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'doctor') {
     header('Location: ../login.php');
     exit();
